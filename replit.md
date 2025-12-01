@@ -73,5 +73,20 @@ Command: `python manage.py runserver 0.0.0.0:5000`
 - The database file is `db.sqlite3` in the project root
 - All migrations have been applied successfully
 
+## Security Considerations (Important for Production)
+The current implementation has several security concerns that should be addressed before production deployment:
+
+1. **Password Storage**: The User model stores passwords in plain text. This is a critical security vulnerability. Before going to production, you should:
+   - Use Django's built-in User model with password hashing
+   - Or implement proper password hashing using `make_password()` and `check_password()` from `django.contrib.auth.hashers`
+
+2. **Settings Configuration**: Current settings are optimized for development only:
+   - `DEBUG = True` should be `False` in production
+   - `SECRET_KEY` is hardcoded and should use environment variables
+   - `ALLOWED_HOSTS = ['*']` should be restricted to your actual domain
+   - `CORS_ALLOW_ALL_ORIGINS = True` should be restricted to trusted origins
+
+3. **Database**: SQLite is suitable for development but consider PostgreSQL for production with higher traffic
+
 ## User Preferences
 None specified yet.
