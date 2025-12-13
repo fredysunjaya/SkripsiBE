@@ -4,6 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
+packages = ["postgresql_17_jit"]
 
 [workflows]
 runButton = "Project"
@@ -34,5 +35,6 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 33899
-externalPort = 3000
+localPort = 8000
+externalPort = 8000
+exposeLocalhost = true

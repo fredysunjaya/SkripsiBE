@@ -17,9 +17,26 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from SecureVoteBE.restapi.views import users
+from SecureVoteBE.restapi.views import votings
+from SecureVoteBE.restapi.views import voting_participants
+from SecureVoteBE.restapi.views import voting_choices
+from SecureVoteBE.restapi.views import voting_candidates
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
     path('users/', users.users_list),
-    path('users/id[]', users.user_details),
+    path('users/<int:id>/', users.user_details),
+
+    path('votings/', votings.votings_list),
+    path('votings/<int:id>/', votings.voting_details),
+
+    path('participants/', voting_participants.voting_participants_list),
+    path('participants/<int:id>/', voting_participants.voting_participant_details),
+
+    path('choices/', voting_choices.voting_choices_list),
+    path('choices/<int:pk>/', voting_choices.voting_choice_details),
+
+    path('candidates/', voting_candidates.voting_candidates_list),
+    path('candidates/<int:pk>', voting_candidates.voting_candidate_details),
 ]

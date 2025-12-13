@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,7 +48,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -54,6 +57,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'SecureVoteBE.urls'
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://65df1d30-cfa1-4e57-8760-75c2bc37637b-00-cjpaackg3e7h.sisko.repl.co',
+    'https://65df1d30-cfa1-4e57-8760-75c2bc37637b-00-cjpaackg3e7h.sisko.replit.dev',
+]
 
 TEMPLATES = [
     {
@@ -77,9 +85,13 @@ WSGI_APPLICATION = 'SecureVoteBE.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "defaultdb",
+        "USER": "avnadmin",
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": "pg-1d982142-exampleproject11.g.aivencloud.com",
+        "PORT": "12154",
     }
 }
 
