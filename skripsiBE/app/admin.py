@@ -7,7 +7,3 @@ from .models.user_groups import *
 
 # Register your models here.
 admin.site.register(User)
-admin.site.register(Voting)
-admin.site.register(VotingCandidate)
-admin.site.register(VotingChoice)
-admin.site.register(VotingParticipant)

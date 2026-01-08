@@ -26,8 +26,8 @@ The project has been successfully set up and configured for the Replit environme
 
 ### Project Structure
 ```
-SecureVoteBE/
-├── restapi/                  # Main REST API application
+skripsiBE/
+├── app/                  # Main REST API application
 │   ├── models/              # Database models
 │   │   ├── users.py         # User model
 │   │   ├── votings.py       # Voting model

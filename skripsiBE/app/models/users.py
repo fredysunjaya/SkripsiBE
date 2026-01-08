@@ -4,9 +4,7 @@ class User(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField()
     password = models.CharField()
-    photo = models.FilePathField(path="SecureVoteBE/restapi/assets/")
+    photo = models.FilePathField(path="skripsiBE/static/")
     
     class Meta:
         db_table = "users"
-        
-        
