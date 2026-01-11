@@ -16,7 +16,7 @@ class WorkingHours(models.Model):
   day = models.CharField(max_length=255,choices=days)
   start_time = models.TimeField()
   end_time = models.TimeField()
-  is24h = models.BooleanField()
+  is_all_day = models.BooleanField()
 
   class Meta:
     db_table = "working_hours"

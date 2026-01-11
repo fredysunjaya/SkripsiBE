@@ -1,22 +1,23 @@
 from django.db import models
-from .user_logs import UserLog
-from .work_types import WorkType
+from .users import User
+from .groups import Group
 from .attendance_types import AttendanceType
 from .users import User
 
 class ApprovalRequest(models.Model):
   status = {
-    "requested": "Requested",
-    "approved": "Approved",
-    "rejected": "Rejected"
-  }
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "cancelled ": "Cancelled"
+    }
   
-  userLog = models.ForeignKey(UserLog, on_delete=models.RESTRICT)
-  workType = models.ForeignKey(WorkType, on_delete=models.RESTRICT)
-  attendanceType = models.ForeignKey(AttendanceType, on_delete=models.RESTRICT)
-  supervisor = models.ForeignKey(User, on_delete=models.RESTRICT)
-  start_time = models.DateTimeField()
-  end_time = models.DateTimeField()
+  user = models.ForeignKey(User, on_delete=models.RESTRICT, related_name="user_set")
+  group = models.ForeignKey(Group, on_delete=models.RESTRICT)
+  supervisor = models.ForeignKey(User, on_delete=models.RESTRICT, related_name="supervisor_set")
+  attendance_type = models.ForeignKey(AttendanceType, on_delete=models.RESTRICT)
+  start_date_time = models.DateTimeField()
+  end_date_time = models.DateTimeField()
   status = models.CharField(max_length=255, choices=status)
   reason = models.TextField()
 

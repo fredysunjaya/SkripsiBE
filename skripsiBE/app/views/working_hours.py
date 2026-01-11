@@ -5,7 +5,7 @@ from skripsiBE.app.models.working_hours import WorkingHours
 from skripsiBE.app.serializers.working_hours import WorkingHourSerializer
 
 @api_view(["GET", "POST"])
-def users_list(request):
+def WorkingHoursList(request):
   if request.method == "GET":
     users = WorkingHours.objects.all()
     serializers = WorkingHourSerializer(users, many=True)
@@ -20,7 +20,7 @@ def users_list(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET", "PUT", "DELETE"])
-def user_details(request, id):
+def WorkingHourDetails(request, id):
   try:
     user = WorkingHours.objects.get(pk=id)
   except WorkingHours.DoesNotExist:

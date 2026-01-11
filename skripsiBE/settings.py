@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'pgvector',
     'skripsiBE.app',
     'rest_framework'
 ]
@@ -92,6 +93,10 @@ DATABASES = {
         "PASSWORD": os.environ.get("DB_PASSWORD"),
         "HOST": "pg-1d982142-exampleproject11.g.aivencloud.com",
         "PORT": "12154",
+        "OPTIONS": {
+            "sslmode": "require",
+            "sslrootcert": "ca.pem",  # optional, Aiven provides this
+        }
     }
 }
 

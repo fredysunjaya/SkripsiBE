@@ -5,7 +5,7 @@ from skripsiBE.app.models.groups import Group
 from skripsiBE.app.serializers.groups import GroupSerializer
 
 @api_view(["GET", "POST"])
-def users_list(request):
+def GroupsList(request):
   if request.method == "GET":
     users = Group.objects.all()
     serializers = GroupSerializer(users, many=True)
@@ -20,7 +20,7 @@ def users_list(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET", "PUT", "DELETE"])
-def user_details(request, id):
+def GroupDetails(request, id):
   try:
     user = Group.objects.get(pk=id)
   except Group.DoesNotExist:

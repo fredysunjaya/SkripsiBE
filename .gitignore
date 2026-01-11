@@ -53,3 +53,6 @@ Thumbs.db
 # Replit
 .upm/
 .cache/
+
+# certificate
+skripsiBE/ca.pem

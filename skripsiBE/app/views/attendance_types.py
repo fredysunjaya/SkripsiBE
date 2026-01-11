@@ -5,7 +5,7 @@ from skripsiBE.app.models.attendance_types import AttendanceType
 from skripsiBE.app.serializers.attendance_types import AttendanceTypeSerializer
 
 @api_view(["GET", "POST"])
-def users_list(request):
+def AttendanceTypesList(request):
   if request.method == "GET":
     users = AttendanceType.objects.all()
     serializers = AttendanceTypeSerializer(users, many=True)
@@ -20,7 +20,7 @@ def users_list(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET", "PUT", "DELETE"])
-def user_details(request, id):
+def AttendanceTypeDetails(request, id):
   try:
     user = AttendanceType.objects.get(pk=id)
   except AttendanceType.DoesNotExist:

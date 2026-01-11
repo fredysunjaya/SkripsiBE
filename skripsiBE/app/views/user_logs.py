@@ -5,7 +5,7 @@ from skripsiBE.app.models.user_logs import UserLog
 from skripsiBE.app.serializers.user_logs import UserLog
 
 @api_view(["GET", "POST"])
-def users_list(request):
+def UserLogsList(request):
   if request.method == "GET":
     users = UserLog.objects.all()
     serializers = UserLog(users, many=True)
@@ -20,7 +20,7 @@ def users_list(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET", "PUT", "DELETE"])
-def user_details(request, id):
+def UserLogDetails(request, id):
   try:
     user = UserLog.objects.get(pk=id)
   except UserLog.DoesNotExist:

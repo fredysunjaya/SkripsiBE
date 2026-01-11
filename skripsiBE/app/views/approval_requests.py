@@ -5,7 +5,7 @@ from skripsiBE.app.models.approval_requests import ApprovalRequest
 from skripsiBE.app.serializers.approval_requests import ApprovalRequestSerializer
 
 @api_view(["GET", "POST"])
-def users_list(request):
+def ApprovalRequestsList(request):
   if request.method == "GET":
     users = ApprovalRequest.objects.all()
     serializers = ApprovalRequestSerializer(users, many=True)
@@ -20,7 +20,7 @@ def users_list(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET", "PUT", "DELETE"])
-def user_details(request, id):
+def ApprovalRequestDetails(request, id):
   try:
     user = ApprovalRequest.objects.get(pk=id)
   except ApprovalRequest.DoesNotExist:

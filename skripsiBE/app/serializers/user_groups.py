@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from skripsiBE.app.models.user_group import UserGroup
+from skripsiBE.app.models.user_groups import UserGroup
 from skripsiBE.app.models.groups import Group
 from skripsiBE.app.models.users import User
 
