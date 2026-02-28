@@ -33,4 +33,5 @@ RUN python manage.py collectstatic --noinput
 EXPOSE 8080
 
 # Command to run the application using Uvicorn and Gunicorn
-CMD ["python", "-m", "gunicorn", "skripsiBE.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--workers", "4", "--bind", "0.0.0.0:8080"]
+# CMD ["python", "-m", "gunicorn", "skripsiBE.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--workers", "4", "--bind", "0.0.0.0:8080"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
