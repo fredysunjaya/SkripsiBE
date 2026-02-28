@@ -1,38 +1,39 @@
-# Use the official Python 3.13 slim image as a base
-FROM python:3.13-slim
+# syntax=docker/dockerfile:1
 
-# Set environment variables to ensure Python outputs are not buffered
-ENV PYTHONUNBUFFERED 1
+# Base image with minimal footprint
+FROM python:3.13-slim AS base
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y libxcb1 libxcb-render0 libxcb-shm0 libgl1-mesa-glx 
+# keep output unbuffered and bytecode generation off
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# install build and runtime dependencies
 RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    gcc \
-    build-essential \
+        gcc \
+        libpq-dev \
+        build-essential \
+        libxcb1 libxcb-render0 libxcb-shm0 libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
 
-# Create and set the working directory for your Django app
 WORKDIR /app
 
-# Copy the requirements.txt file into the container
-COPY requirements.txt /app/
+# copy and install python requirements first so layer can be cached
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Python dependencies from the requirements.txt
-RUN pip install -r requirements.txt
+# copy the rest of the code
+COPY . .
 
-# Copy the entire Django project code into the container
-COPY . /app/
-
-# Set the environment variable for Django's settings module
-ENV DJANGO_SETTINGS_MODULE=skripsiBE.settings
-
-# Collect static files (optional if you need static files in production)
+# collect static assets during build
 RUN python manage.py collectstatic --noinput
 
-# Expose the port that Uvicorn will run on
+
+# final stage (could be the same as base for a simple project)
+FROM base AS final
+WORKDIR /app
+ENV DJANGO_SETTINGS_MODULE=skripsiBE.settings
+
 EXPOSE 8080
 
-# Command to run the application using Uvicorn and Gunicorn
-# CMD ["python", "-m", "gunicorn", "skripsiBE.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--workers", "4", "--bind", "0.0.0.0:8080"]
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
+# use gunicorn with an async uvicorn worker for ASGI compatibility
+CMD ["gunicorn", "skripsiBE.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--workers", "4", "--bind", "0.0.0.0:8080"]
