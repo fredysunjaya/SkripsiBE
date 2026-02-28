@@ -5,7 +5,7 @@ from deepface import DeepFace
 
 def UserSeeder():
     fake = Faker("id_ID")
-    folder = "skripsiBE/assets/"
+    folder = "skripsiBE/static/images/faces/"
     images = [
         os.path.join(folder, file) for file in os.listdir(folder)
     ]
