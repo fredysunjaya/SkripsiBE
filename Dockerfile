@@ -5,6 +5,7 @@ FROM python:3.13-slim
 ENV PYTHONUNBUFFERED 1
 
 # Install system dependencies
+RUN apt-get update && apt-get install -y libxcb1 libxcb-render0 libxcb-shm0
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
