@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Base image with minimal footprint
-FROM python:3.13
+FROM python:3.13-slim
 
 # -----------------------------------
 # switch to application directory
