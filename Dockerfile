@@ -25,9 +25,6 @@ RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted
 # install deepface from source code (always up-to-date)
 RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -e . --no-deps
 
-# collect static assets during build
-RUN python manage.py collectstatic --noinput
-
 # -----------------------------------
 # environment variables
 ENV PYTHONUNBUFFERED=1
