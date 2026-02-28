@@ -10,9 +10,15 @@ ENV PYTHONUNBUFFERED=1 \
 # install build and runtime dependencies
 RUN apt-get update && apt-get install -y \
         gcc \
-        libpq-dev \
         build-essential \
-        libxcb1 libxcb-render0 libxcb-shm0 libgl1-mesa-glx \
+        libpq-dev \
+        libxcb1 libxcb-render0 libxcb-shm0 \
+        libgl1 libgl1-mesa-dri \
+        libsm6 libxext6 libxrender1 \
+        ffmpeg \
+        libatlas-base-dev \
+        libhdf5-serial-dev \
+        libopenblas-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
