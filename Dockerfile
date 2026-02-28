@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
 # copy and install python requirements first so layer can be cached
 COPY requirements.txt .
 # copy the rest of the code
-COPY . .
+COPY . /app/
 
 # install dependencies - deepface with these dependency versions is working
 RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -r /app/requirements.txt
@@ -31,8 +31,6 @@ RUN python manage.py collectstatic --noinput
 # -----------------------------------
 # environment variables
 ENV PYTHONUNBUFFERED=1
-
-WORKDIR /app
 
 EXPOSE 8080
 
