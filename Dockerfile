@@ -1,43 +1,43 @@
 # syntax=docker/dockerfile:1
 
 # Base image with minimal footprint
-FROM python:3.13-slim AS base
+FROM python:3.13
 
-# keep output unbuffered and bytecode generation off
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+# -----------------------------------
+# create required folder
+RUN mkdir -p /app && chown -R 1001:0 /app
+RUN mkdir /app/deepface
+
+# -----------------------------------
+# switch to application directory
+WORKDIR /app
 
 # install build and runtime dependencies
 RUN apt-get update && apt-get install -y \
-        gcc \
-        build-essential \
-        libpq-dev \
-        libxcb1 libxcb-render0 libxcb-shm0 \
-        libgl1 libgl1-mesa-dri \
-        libsm6 libxext6 libxrender1 \
-        ffmpeg \
-        libatlas-base-dev \
-        libhdf5-serial-dev \
-        libopenblas-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    libhdf5-dev \
+    && rm -rf /var/lib/apt/lists/* 
 
 # copy and install python requirements first so layer can be cached
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
 # copy the rest of the code
 COPY . .
+
+# install dependencies - deepface with these dependency versions is working
+RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -r /app/requirements_local.txt
+# install deepface from source code (always up-to-date)
+RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -e . --no-deps
 
 # collect static assets during build
 RUN python manage.py collectstatic --noinput
 
+# -----------------------------------
+# environment variables
+ENV PYTHONUNBUFFERED=1
 
-# final stage (could be the same as base for a simple project)
-FROM base AS final
 WORKDIR /app
-ENV DJANGO_SETTINGS_MODULE=skripsiBE.settings
 
 EXPOSE 8080
 
