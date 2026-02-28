@@ -53,6 +53,8 @@ pgvector==0.4.2
 pillow==12.1.1
 protobuf==7.34.0
 psycopg==3.2.12
+psycopg-binary==3.2.12
+psycopg-pool==3.3.0
 psycopg2-binary==2.9.10
 Pygments==2.19.2
 PySocks==1.7.1
