@@ -18,7 +18,7 @@ WORKDIR /app
 COPY requirements.txt /app/
 
 # Install Python dependencies from the requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Copy the entire Django project code into the container
 COPY . /app/
@@ -30,7 +30,7 @@ ENV DJANGO_SETTINGS_MODULE=skripsiBE.settings
 RUN python manage.py collectstatic --noinput
 
 # Expose the port that Uvicorn will run on
-EXPOSE 8000
+EXPOSE 8080
 
 # Command to run the application using Uvicorn and Gunicorn
-CMD ["uvicorn", "skripsiBE.asgi:application", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+CMD ["python", "-m", "gunicorn", "skripsiBE.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--workers", "4", "--bind", "0.0.0.0:8080"]
