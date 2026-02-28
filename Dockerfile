@@ -4,11 +4,6 @@
 FROM python:3.13
 
 # -----------------------------------
-# create required folder
-RUN mkdir -p /app && chown -R 1001:0 /app
-RUN mkdir /app/deepface
-
-# -----------------------------------
 # switch to application directory
 WORKDIR /app
 
