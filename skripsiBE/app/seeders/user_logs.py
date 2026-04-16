@@ -1,10 +1,12 @@
 from faker import Faker 
 from skripsiBE.app.models.user_logs import UserLog
 from skripsiBE.app.models.users import User
+from skripsiBE.app.models.groups import Group
 from datetime import timedelta
 
 def UserLogSeeder():
     usersCount = User.objects.count()
+    groupsCount = Group.objects.count()
     
     for i in range(usersCount):
         fake = Faker("id_ID")
@@ -14,7 +16,7 @@ def UserLogSeeder():
             
             UserLog.objects.create(
                 user_id = i + 1,
-                group_id = fake.random_int(min=1, max=10),
+                group_id = fake.random_int(min=1, max=groupsCount),
                 attendance_type_id = fake.random_int(min=1, max=5),
                 start_date_time = startDateTime,
                 end_date_time = startDateTime + timedelta(hours=8)

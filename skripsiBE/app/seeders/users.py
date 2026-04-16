@@ -11,7 +11,7 @@ def UserSeeder():
     ]
     images = tuple(images)
     
-    for i in range(300):
+    for i in range(10):
         try:
             image = fake.unique.random_element(images)
             vector = DeepFace.represent(img_path=image, model_name="Facenet512")[0]["embedding"]

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection
-from skripsiBE.app.models.approval_requests import ApprovalRequest 
+from skripsiBE.app.models.leave_requests import ApprovalRequest 
 from skripsiBE.app.models.attendance_types import AttendanceType 
 from skripsiBE.app.models.groups import Group
 from skripsiBE.app.models.invitation_requests import InvitationRequest

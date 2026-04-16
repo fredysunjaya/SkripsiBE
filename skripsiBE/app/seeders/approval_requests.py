@@ -1,5 +1,5 @@
 from faker import Faker
-from skripsiBE.app.models.approval_requests import ApprovalRequest
+from skripsiBE.app.models.leave_requests import LeaveRequest
 from skripsiBE.app.models.user_groups import UserGroup
 from skripsiBE.app.models.users import User
 from datetime import timedelta
@@ -16,7 +16,7 @@ def ApprovalRequestSeeder():
             userGroups = UserGroup.objects.filter(group_id=groupId, role_id=2).values_list('user_id', flat=True)
             startDateTime = fake.unique.date_time_between(start_date='-60d', end_date='now')
             
-            ApprovalRequest.objects.create(
+            LeaveRequest.objects.create(
                 user_id = i + 1,
                 group_id = groupId,
                 attendance_type_id =fake.random_int(min=1, max=5),

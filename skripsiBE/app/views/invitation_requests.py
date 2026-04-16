@@ -22,7 +22,7 @@ class InvitationRequestsListForInvitee(APIView):
     serializers = InvitationRequestSerializer(result_page, many=True)
     return Response(serializers.data, status=status.HTTP_200_OK)
 
-class InvitationRequestListForInviter:
+class InvitationRequestListsForInviter(APIView):
   authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
   permission_classes = [IsAdminUser]
 

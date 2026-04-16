@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'pgvector',
     'skripsiBE.app',
-    'rest_framework'
+    'rest_framework',
+    'django_migrate_fresh'
 ]
 
 # CORS_ALLOWED_ORIGINS = [
@@ -137,7 +138,7 @@ REST_FRAMEWORK = {
         'skripsiBE.app.custom_session_authentication.CookieSessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'skripsiBE.app.custom_is_authenticated.isAuthenticatedUser',
+        'skripsiBE.app.custom_is_authenticated.IsAuthenticatedUser',
     ],
 }
 

@@ -6,7 +6,7 @@ from skripsiBE.app.models.attendance_types import AttendanceType
 
 def GroupSeeder():
     fake = Faker("id_ID")
-    groupCount = 10
+    groupCount = 3
     
     for i in range(groupCount):
         Group.objects.create(
@@ -27,28 +27,28 @@ def GroupSeeder():
             )
     
     # UserGroup Seeder
-    for i in range(groupCount):
+    for i in range(1):
         # Admin
         UserGroup.objects.create(
-            user_id = fake.unique.random_int(min=1, max=300),
+            user_id = fake.unique.random_int(min=1, max=10),
             group_id = i + 1,
             role_id = 1,
         )
         
         # Supervisor
-        spvCount = fake.random_int(min=1, max=5)
+        spvCount = fake.random_int(min=1, max=2)
         for j in range(spvCount):
             UserGroup.objects.create(
-                user_id = fake.unique.random_int(min=1, max=300),
+                user_id = fake.unique.random_int(min=1, max=10),
                 group_id = i + 1,
                 role_id = 2,
             )
         
         # User
-        userCount = fake.random_int(min=10, max=20)
+        userCount = fake.random_int(min=1, max=7)
         for j in range(userCount):
             UserGroup.objects.create(
-                user_id = fake.unique.random_int(min=1, max=300),
+                user_id = fake.unique.random_int(min=1, max=10),
                 group_id = i + 1,
                 role_id = 3,
             )
@@ -59,5 +59,5 @@ def GroupSeeder():
             AttendanceType.objects.create(
                 name = fake.name(),
                 group_id = i + 1,
-                remaining_amount = fake.random_int(min=1, max=999),
+                max_days = fake.random_int(min=1, max=999),
             )

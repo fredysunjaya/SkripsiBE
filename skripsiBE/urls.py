@@ -17,7 +17,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from skripsiBE.app.views import approval_requests
+from skripsiBE.app.views import leave_requests
+from skripsiBE.app.views import override_requests
 from skripsiBE.app.views import attendance_types
 from skripsiBE.app.views import groups
 from skripsiBE.app.views import invitation_requests
@@ -35,21 +36,26 @@ urlpatterns = [
     path('leave-remaining/<int:group>/<int:user>/', leave_remaining.LeaveRemainingList.as_view()),
     path('leave-remaining/<int:id>/', leave_remaining.LeaveRemainingDetails.as_view()),
 
-    path('approval-requests/', approval_requests.GetUserApprovalRequestsForUser.as_view()),
-    path('approval-requests/<int:user>/', approval_requests.GetUserApprovalRequestsForUser.as_view()),
-    path('approval-requests/<int:user>/', approval_requests.GetUserApprovalRequestsForSupervisor.as_view()),
-    path('approval-requests/<int:id>/', approval_requests.ApprovalRequestDetails.as_view()),
+    path('leave-requests/', leave_requests.GetUserLeaveRequestsForUser.as_view()),
+    path('leave-requests/<int:user>/', leave_requests.GetUserLeaveRequestsForUser.as_view()),
+    path('leave-requests/<int:user>/', leave_requests.GetUserLeaveRequestsForSupervisor.as_view()),
+    path('leave-requests/<int:id>/', leave_requests.LeaveRequestDetails.as_view()),
 
-    path('attendance-types/', attendance_types.AttendanceTypesList.as_view()),
-    path('attendance-types/<int:group>/', attendance_types.AttendanceTypesList.as_view()),
+    path('override-requests/', override_requests.GetUserOverrideRequestsForUser.as_view()),
+    path('override-requests/<int:user>/', override_requests.GetUserOverrideRequestsForUser.as_view()),
+    path('override-requests/<int:user>/', override_requests.GetUserOverrideRequestsForSupervisor.as_view()),
+    path('override-requests/<int:id>/', override_requests.OverrideRequestDetails.as_view()),
+
+    path('attendance-types/', attendance_types.AttendanceTypeList.as_view()),
+    path('attendance-types/<int:group>/', attendance_types.AttendanceTypeList.as_view()),
     path('attendance-types/<int:id>/', attendance_types.AttendanceTypeDetails.as_view()),
 
     path('groups/', groups.GroupsList.as_view()),
     path('groups/<int:id>/', groups.GroupDetails.as_view()),
     
-    path('invitation-requests-invitee/<int:user>/', invitation_requests.InvitationRequestsForInvitee.as_view()),
-    path('invitation-requests-inviter/', invitation_requests.InvitationRequestsListForInviter.as_view()),
-    path('invitation-requests-inviter/<int:user>/', invitation_requests.InvitationRequestsListForInviter.as_view()),
+    path('invitation-requests-invitee/<int:user>/', invitation_requests.InvitationRequestsListForInvitee.as_view()),
+    path('invitation-requests-inviter/', invitation_requests.InvitationRequestListsForInviter.as_view()),
+    path('invitation-requests-inviter/<int:user>/', invitation_requests.InvitationRequestListsForInviter.as_view()),
     path('invitation-requests/<int:id>/', invitation_requests.InvitationRequestDetails.as_view()),
 
     path('roles/', roles.RolesList.as_view()),

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models.approval_requests import *
+from .models.leave_requests import *
 from .models.attendance_types import *
 from .models.groups import *
 from .models.invitation_requests import *
