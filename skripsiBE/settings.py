@@ -130,6 +130,17 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.ScryptPasswordHasher",
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'skripsiBE.app.custom_pagination.CustomPageNumberPagination',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'skripsiBE.app.custom_basic_authentication.EmailAuthentication',
+        'skripsiBE.app.custom_session_authentication.CookieSessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'skripsiBE.app.custom_is_authenticated.isAuthenticatedUser',
+    ],
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -157,3 +168,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+# session stored in DB (default)
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+SESSION_COOKIE_AGE = 60 * 60 * 24      # 1 day
+SESSION_COOKIE_HTTPONLY = True          # JS can't access cookie (security)
+SESSION_COOKIE_SAMESITE = 'Lax'        # CSRF protection
+SESSION_SAVE_EVERY_REQUEST = True       # refresh expiry on activity
+
+# in production set this to True
+SESSION_COOKIE_SECURE = False           # True = HTTPS only

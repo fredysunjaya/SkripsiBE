@@ -1,25 +1,35 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import APIView
 from rest_framework.response import Response
 from skripsiBE.app.models.roles import Role
 from skripsiBE.app.serializers.roles import RoleSerializer
+from rest_framework.settings import api_settings
+from skripsiBE.app.custom_basic_authentication import EmailAuthentication
+from skripsiBE.app.custom_session_authentication import CookieSessionAuthentication
+from skripsiBE.app.custom_is_authenticated import IsAuthenticatedUser, IsAdminUser, IsSupervisorUser
 
-@api_view(["GET"])
-def RolesList(request):
-  if request.method == "GET":
-    users = Role.objects.all()
-    serializers = RoleSerializer(users, many=True)
+class RolesList(APIView):
+  # maybe unused
+  authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
+  permission_classes = [IsAdminUser]
+
+  def get(self, request):
+    roles = Role.objects.all()
+
+    paginator = api_settings.DEFAULT_PAGINATION_CLASS()
+    result_page = paginator.paginate_queryset(roles, request)
+
+    serializers = RoleSerializer(result_page, many=True)
     return Response(serializers.data, status=status.HTTP_200_OK)
 
-@api_view(["GET"])
-def RoleDetails(request, id):
-  try:
-    user = Role.objects.get(pk=id)
-  except Role.DoesNotExist:
-    return Response(status=status.HTTP_404_NOT_FOUND)
-  except:
-    return Response(status=status.HTTP_400_BAD_REQUEST);
+class RoleDetails(APIView):
+  # maybe unused
+  authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
+  permission_classes = [IsAdminUser]
 
-  if request.method == "GET":
-    serializer = RoleSerializer(user)
+  def get(self, request, id):
+    role = get_object_or_404(Role, pk=id)
+  
+    serializer = RoleSerializer(role)
     return Response(serializer.data, status=status.HTTP_200_OK)

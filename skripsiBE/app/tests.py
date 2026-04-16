@@ -1,3 +1,3 @@
-from django.test import TestCase
+import bcrypt
 
-# Create your tests here.
+print(bcrypt.hashpw("Wl4FJvNTT_".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'))

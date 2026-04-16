@@ -4,9 +4,9 @@ from skripsiBE.app.models.groups import Group
 from skripsiBE.app.models.users import User
 
 class InvitationRequestSerializer(serializers.ModelSerializer):
-    group = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all())
-    invitee = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    inviter = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    group_id = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all(), source="group", write_only=True)
+    invitee_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source="invitee", write_only=True)
+    inviter_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source="inviter", write_only=True)
     
     class Meta:
         model = InvitationRequest

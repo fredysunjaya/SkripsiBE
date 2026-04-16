@@ -1,6 +1,5 @@
 from django.db import models
 from pgvector.django import VectorField
-
 class User(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)

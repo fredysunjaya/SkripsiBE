@@ -34,6 +34,8 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     && rm -rf /var/lib/apt/lists/*
 
+RUN python -c "from deepface import DeepFace; DeepFace.build_model('Facenet')"
+
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
