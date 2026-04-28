@@ -7,61 +7,70 @@ from skripsiBE.app.serializers.leave_requests import LeaveRequestSerializer
 from rest_framework.settings import api_settings
 from skripsiBE.app.custom_basic_authentication import EmailAuthentication
 from skripsiBE.app.custom_session_authentication import CookieSessionAuthentication
-from skripsiBE.app.custom_is_authenticated import IsAuthenticatedUser, IsAdminUser, IsSupervisorUser
+from skripsiBE.app.custom_is_authenticated import (
+    IsAuthenticatedUser,
+    IsAdminUser,
+    IsSupervisorUser,
+)
+
 
 class GetUserLeaveRequestsForUser(APIView):
-  def get(self, request, user):
-    leave_requests = LeaveRequest.objects.filter(user=user)
+    def get(self, request, user):
+        leave_requests = LeaveRequest.objects.filter(user=user)
 
-    paginator = api_settings.DEFAULT_PAGINATION_CLASS()
-    result_page = paginator.paginate_queryset(leave_requests, request)
+        paginator = api_settings.DEFAULT_PAGINATION_CLASS()
+        result_page = paginator.paginate_queryset(leave_requests, request)
 
-    serializers = LeaveRequestSerializer(result_page, many=True)
-    return paginator.get_paginated_response(serializers.data)
-  
-  def post(self, request):
-    serializer = LeaveRequestSerializer(data=request.data)
-    if serializer.is_valid():
-      serializer.save()
-      return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializers = LeaveRequestSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializers.data)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-  
+    def post(self, request):
+        serializer = LeaveRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class GetUserLeaveRequestsForSupervisor(APIView):
-  def get(self, request, user):
-    leave_requests = LeaveRequest.objects.filter(supervisor=user)
+    def get(self, request, user):
+        leave_requests = LeaveRequest.objects.filter(supervisor=user)
 
-    paginator = api_settings.DEFAULT_PAGINATION_CLASS()
-    result_page = paginator.paginate_queryset(leave_requests, request)
+        paginator = api_settings.DEFAULT_PAGINATION_CLASS()
+        result_page = paginator.paginate_queryset(leave_requests, request)
 
-    serializers = LeaveRequestSerializer(result_page, many=True)
-    return paginator.get_paginated_response(serializers.data)
+        serializers = LeaveRequestSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializers.data)
+
 
 class LeaveRequestDetails(APIView):
-  authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
+    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
 
-  def get_leave_request(id):
-    leave_request = get_object_or_404(LeaveRequest, pk=id)
-    return leave_request
+    def get_leave_request(id):
+        leave_request = get_object_or_404(LeaveRequest, pk=id)
+        return leave_request
 
-  def get(self, request, id):
-    self.permission_classes = [IsAuthenticatedUser]
-    serializer = LeaveRequestSerializer(self.get_leave_request(id))
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request, id):
+        self.permission_classes = [IsAuthenticatedUser]
+        serializer = LeaveRequestSerializer(self.get_leave_request(id))
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-  def put(self, request, id):
-    self.permission_classes = [IsSupervisorUser]
-    serializer = LeaveRequestSerializer(self.get_leave_request(id), data=request.data)
-    
-    if serializer.is_valid():
-      serializer.save()
-      return Response(serializer.data, status=status.HTTP_200_OK)
+    def put(self, request, id):
+        self.permission_classes = [IsSupervisorUser]
+        serializer = LeaveRequestSerializer(
+            self.get_leave_request(id), data=request.data, partial=True
+        )
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
-  def delete(self, request, id):
-    # maybe unused
-    self.permission_classes = [IsAuthenticatedUser]
-    leave_request = self.get_leave_request(id)
-    leave_request.delete()
-    return Response("LeaveRequest Deleted", status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        # maybe unused
+        self.permission_classes = [IsAuthenticatedUser]
+        leave_request = self.get_leave_request(id)
+        leave_request.delete()
+        return Response("LeaveRequest Deleted", status=status.HTTP_204_NO_CONTENT)

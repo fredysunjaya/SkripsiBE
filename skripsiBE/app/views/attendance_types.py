@@ -7,50 +7,58 @@ from skripsiBE.app.serializers.attendance_types import AttendanceTypeSerializer
 from rest_framework.settings import api_settings
 from skripsiBE.app.custom_basic_authentication import EmailAuthentication
 from skripsiBE.app.custom_session_authentication import CookieSessionAuthentication
-from skripsiBE.app.custom_is_authenticated import IsAuthenticatedUser, IsAdminUser, IsSupervisorUser
+from skripsiBE.app.custom_is_authenticated import (
+    IsAuthenticatedUser,
+    IsAdminUser,
+    IsSupervisorUser,
+)
+
 
 class AttendanceTypeList(APIView):
-  authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
-  permission_classes = [IsAdminUser]
+    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
+    permission_classes = [IsAdminUser]
 
-  def get(self, request, group):
-    attendance_types = AttendanceType.objects.filter(group=group)
+    def get(self, request, group):
+        attendance_types = AttendanceType.objects.filter(group=group)
 
-    paginator = api_settings.DEFAULT_PAGINATION_CLASS()
-    result_page = paginator.paginate_queryset(attendance_types, request)
+        paginator = api_settings.DEFAULT_PAGINATION_CLASS()
+        result_page = paginator.paginate_queryset(attendance_types, request)
 
-    serializers = AttendanceTypeSerializer(result_page, many=True)
-    return Response(serializers.data, status=status.HTTP_200_OK)
+        serializers = AttendanceTypeSerializer(result_page, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
-  def post(self, request):
-    serializer = AttendanceTypeSerializer(data=request.data)
-    if serializer.is_valid():
-      serializer.save()
-      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def post(self, request):
+        serializer = AttendanceTypeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class AttendanceTypeDetails(APIView):
-  authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
-  permission_classes = [IsAdminUser]
+    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
+    permission_classes = [IsAdminUser]
 
-  def get_attendance_type(id):
-    attendance_type = get_object_or_404(AttendanceType, pk=id)
-    return attendance_type
+    def get_attendance_type(id):
+        attendance_type = get_object_or_404(AttendanceType, pk=id)
+        return attendance_type
 
-  def get(self, request, id):
-    serializer = AttendanceTypeSerializer(self.get_attendance_type(id))
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request, id):
+        serializer = AttendanceTypeSerializer(self.get_attendance_type(id))
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-  def put(self, request, id):
-    serializer = AttendanceTypeSerializer(self.get_attendance_type(id), data=request.data)
-    if serializer.is_valid():
-      serializer.save()
-      return Response(serializer.data, status=status.HTTP_200_OK)
+    def put(self, request, id):
+        serializer = AttendanceTypeSerializer(
+            self.get_attendance_type(id), data=request.data, partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-  def delete(self, request, id):
-    attendance_type = self.get_attendance_type(id)
-    attendance_type.delete()
-    return Response("AttendanceType Deleted", status=status.HTTP_204_NO_CONTENT)
+    def delete(self, request, id):
+        attendance_type = self.get_attendance_type(id)
+        attendance_type.delete()
+        return Response("AttendanceType Deleted", status=status.HTTP_204_NO_CONTENT)
