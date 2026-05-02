@@ -89,6 +89,8 @@ class UserLogin(APIView):
             request.session["user_id"] = user.id
             request.session.save()
 
+            print(serializer.data)
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response(
@@ -103,11 +105,9 @@ class UserLogout(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
     permission_classes = [IsAuthenticatedUser]
 
-    def post(request):
+    def post(self, request):
         request.session.flush()
-        return Response(
-            {"message": "Logged out successfully"}, status=status.HTTP_200_OK
-        )
+        return Response(status=status.HTTP_200_OK)
 
 
 class UserRegister(APIView):

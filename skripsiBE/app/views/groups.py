@@ -26,7 +26,7 @@ class GroupsList(APIView):
         result_page = paginator.paginate_queryset(groups, request)
 
         serializers = GroupSerializer(result_page, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serializers.data)
 
     def post(self, request):
         serializer = GroupSerializer(data=request.data)
@@ -40,7 +40,7 @@ class GroupsList(APIView):
 class GroupDetails(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
 
-    def get_group(id):
+    def get_group(self, id):
         group = get_object_or_404(Group, pk=id)
         return group
 

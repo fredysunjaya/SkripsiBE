@@ -25,7 +25,7 @@ class UserLogsList(APIView):
         result_page = paginator.paginate_queryset(user_logs, request)
 
         serializers = UserLog(result_page, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serializers.data)
 
     def post(self, request):
         serializer = UserLog(data=request.data)

@@ -3,14 +3,15 @@ from .users import User
 from .groups import Group
 from .attendance_types import AttendanceType
 from .users import User
+from django.utils import timezone
 
 
 class LeaveRequest(models.Model):
     status = {
-        "pending": "Pending",
-        "accepted": "Accepted",
+        "requested": "Requested",
+        "approved": "Approved",
         "rejected": "Rejected",
-        "cancelled ": "Cancelled",
+        "cancelled": "Cancelled",
     }
 
     user = models.ForeignKey(
@@ -25,6 +26,7 @@ class LeaveRequest(models.Model):
     end_date_time = models.DateTimeField()
     status = models.CharField(max_length=255, choices=status)
     reason = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         db_table = "leave_requests"

@@ -15,8 +15,13 @@ from skripsiBE.app.custom_is_authenticated import (
 
 
 class GetUserLeaveRequestsForUser(APIView):
-    def get(self, request, user):
-        leave_requests = LeaveRequest.objects.filter(user=user)
+    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
+    permission_classes = [IsAuthenticatedUser]
+
+    def get(self, request, user, group, status):
+        leave_requests = LeaveRequest.objects.filter(
+            user=user, group=group, status=status
+        )
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(leave_requests, request)
@@ -34,8 +39,13 @@ class GetUserLeaveRequestsForUser(APIView):
 
 
 class GetUserLeaveRequestsForSupervisor(APIView):
-    def get(self, request, user):
-        leave_requests = LeaveRequest.objects.filter(supervisor=user)
+    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
+    permission_classes = [IsSupervisorUser]
+
+    def get(self, request, user, group):
+        leave_requests = LeaveRequest.objects.filter(
+            supervisor=user, group=group, status="pending"
+        )
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(leave_requests, request)

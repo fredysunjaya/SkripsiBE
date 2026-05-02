@@ -4,60 +4,70 @@ from skripsiBE.app.models.working_hours import WorkingHours
 from skripsiBE.app.models.user_groups import UserGroup
 from skripsiBE.app.models.attendance_types import AttendanceType
 
+
 def GroupSeeder():
     fake = Faker("id_ID")
-    groupCount = 3
-    
-    for i in range(groupCount):
-        Group.objects.create(
-            name = fake.company(),
-            description = fake.text(), 
-        )
-    
+    groupCount = 20
+
+    # for i in range(groupCount):
+    #     Group.objects.create(
+    #         name=fake.company(),
+    #         description=fake.text(),
+    #     )
+
     # WorkingHours Seeder
-    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
     for day in days:
-        for i in range(groupCount):
+        for i in range(26, 26 + groupCount):
             WorkingHours.objects.create(
-                group_id = i + 1,
-                day = day,
-                start_time = fake.time_object(),
-                end_time = fake.time_object(),
-                is_all_day = fake.boolean(),
+                group_id=i + 1,
+                day=day,
+                start_time=fake.time_object(),
+                end_time=fake.time_object(),
+                is_all_day=fake.boolean(),
             )
-    
+
     # UserGroup Seeder
-    for i in range(1):
-        # Admin
-        UserGroup.objects.create(
-            user_id = fake.unique.random_int(min=1, max=10),
-            group_id = i + 1,
-            role_id = 1,
-        )
-        
-        # Supervisor
-        spvCount = fake.random_int(min=1, max=2)
-        for j in range(spvCount):
-            UserGroup.objects.create(
-                user_id = fake.unique.random_int(min=1, max=10),
-                group_id = i + 1,
-                role_id = 2,
-            )
-        
-        # User
-        userCount = fake.random_int(min=1, max=7)
-        for j in range(userCount):
-            UserGroup.objects.create(
-                user_id = fake.unique.random_int(min=1, max=10),
-                group_id = i + 1,
-                role_id = 3,
-            )
-    
+    # for i in range(26, 26 + groupCount + 1):
+    #     fake = Faker("id_ID")
+    #     # Admin
+    #     UserGroup.objects.create(
+    #         user_id=fake.unique.random_int(min=1, max=10),
+    #         group_id=i + 1,
+    #         role_id=1,
+    #     )
+
+    #     # Supervisor
+    #     spvCount = fake.random_int(min=1, max=2)
+    #     for j in range(spvCount):
+    #         UserGroup.objects.create(
+    #             user_id=fake.unique.random_int(min=1, max=10),
+    #             group_id=i + 1,
+    #             role_id=2,
+    #         )
+
+    #     # User
+    #     userCount = fake.random_int(min=1, max=7)
+    #     for j in range(userCount):
+    #         UserGroup.objects.create(
+    #             user_id=fake.unique.random_int(min=1, max=10),
+    #             group_id=i + 1,
+    #             role_id=3,
+    #         )
+
     # AttendanceType Seeder
     for i in range(groupCount):
         for j in range(5):
             AttendanceType.objects.create(
-                name = fake.name(),
-                group_id = i + 1,
-                max_days = fake.random_int(min=1, max=999),
+                name=fake.name(),
+                group_id=i + 1,
+                max_days=fake.random_int(min=1, max=999),
             )

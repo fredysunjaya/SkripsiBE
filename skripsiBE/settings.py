@@ -24,29 +24,29 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n(0wz#lve&gy(vp3^zwwy)*g@0pp)gw618_d#mh=aj8*jazjso'
+SECRET_KEY = "django-insecure-n(0wz#lve&gy(vp3^zwwy)*g@0pp)gw618_d#mh=aj8*jazjso"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 # ALLOWED_HOSTS = ['your-railway-app-name.up.railway.app', 'localhost']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'corsheaders',
-    'pgvector',
-    'skripsiBE.app',
-    'rest_framework',
-    'django_migrate_fresh'
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "corsheaders",
+    "pgvector",
+    "skripsiBE.app",
+    "rest_framework",
+    "django_migrate_fresh",
 ]
 
 # CORS_ALLOWED_ORIGINS = [
@@ -54,40 +54,40 @@ INSTALLED_APPS = [
 # ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', 
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'skripsiBE.urls'
+ROOT_URLCONF = "skripsiBE.urls"
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://65df1d30-cfa1-4e57-8760-75c2bc37637b-00-cjpaackg3e7h.sisko.repl.co',
-    'https://65df1d30-cfa1-4e57-8760-75c2bc37637b-00-cjpaackg3e7h.sisko.replit.dev',
+    "https://65df1d30-cfa1-4e57-8760-75c2bc37637b-00-cjpaackg3e7h.sisko.repl.co",
+    "https://65df1d30-cfa1-4e57-8760-75c2bc37637b-00-cjpaackg3e7h.sisko.replit.dev",
 ]
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'skripsiBE.wsgi.application'
+WSGI_APPLICATION = "skripsiBE.wsgi.application"
 
 
 # Database
@@ -110,16 +110,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -132,22 +132,15 @@ PASSWORD_HASHERS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'skripsiBE.app.custom_pagination.CustomPageNumberPagination',
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'skripsiBE.app.custom_basic_authentication.EmailAuthentication',
-        'skripsiBE.app.custom_session_authentication.CookieSessionAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'skripsiBE.app.custom_is_authenticated.IsAuthenticatedUser',
-    ],
+    "DEFAULT_PAGINATION_CLASS": "skripsiBE.app.custom_pagination.CustomPageNumberPagination",
 }
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -157,7 +150,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
@@ -165,19 +158,19 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
-
+CORS_ALLOW_CREDENTIALS = True
 
 # session stored in DB (default)
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
-SESSION_COOKIE_AGE = 60 * 60 * 24      # 1 day
-SESSION_COOKIE_HTTPONLY = True          # JS can't access cookie (security)
-SESSION_COOKIE_SAMESITE = 'Lax'        # CSRF protection
-SESSION_SAVE_EVERY_REQUEST = True       # refresh expiry on activity
+SESSION_COOKIE_AGE = 60 * 60 * 24  # 1 day
+SESSION_COOKIE_HTTPONLY = True  # JS can't access cookie (security)
+SESSION_COOKIE_SAMESITE = "Lax"  # CSRF protection
+SESSION_SAVE_EVERY_REQUEST = True  # refresh expiry on activity
 
 # in production set this to True
-SESSION_COOKIE_SECURE = False           # True = HTTPS only
+SESSION_COOKIE_SECURE = False  # True = HTTPS only

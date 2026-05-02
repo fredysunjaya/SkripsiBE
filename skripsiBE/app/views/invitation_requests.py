@@ -25,7 +25,7 @@ class InvitationRequestsListForInvitee(APIView):
         result_page = paginator.paginate_queryset(invitation_requests, request)
 
         serializers = InvitationRequestSerializer(result_page, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serializers.data)
 
 
 class InvitationRequestListsForInviter(APIView):
@@ -39,7 +39,7 @@ class InvitationRequestListsForInviter(APIView):
         result_page = paginator.paginate_queryset(invitation_requests, request)
 
         serializers = InvitationRequestSerializer(result_page, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serializers.data)
 
     def post(self, request):
         serializer = InvitationRequestSerializer(data=request.data)

@@ -19,13 +19,29 @@ class UserGroupsList(APIView):
     permission_classes = [IsAuthenticatedUser]
 
     def get(self, request, user):
-        user_groups = UserGroup.objects.filter(user=user)
+        user_groups = UserGroup.objects.filter(user=user, role__in=[2, 3])
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(user_groups, request)
 
+        print(result_page)
         serializers = UserGroupSerializer(result_page, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serializers.data)
+
+
+class UserGroupsListAdmin(APIView):
+    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
+    permission_classes = [IsAuthenticatedUser]
+
+    def get(self, request, user):
+        user_groups = UserGroup.objects.filter(user=user, role=1)
+
+        paginator = api_settings.DEFAULT_PAGINATION_CLASS()
+        result_page = paginator.paginate_queryset(user_groups, request)
+
+        print(result_page)
+        serializers = UserGroupSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializers.data)
 
 
 class UserGroupsMembers(APIView):
@@ -39,7 +55,7 @@ class UserGroupsMembers(APIView):
         result_page = paginator.paginate_queryset(user_groups, request)
 
         serializers = UserGroupSerializer(result_page, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serializers.data)
 
     def post(self, request):
         serializer = UserGroupSerializer(data=request.data)

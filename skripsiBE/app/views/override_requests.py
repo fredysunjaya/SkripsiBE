@@ -15,8 +15,13 @@ from skripsiBE.app.custom_is_authenticated import (
 
 
 class GetUserOverrideRequestsForUser(APIView):
-    def get(self, request, user):
-        override_requests = OverrideRequest.objects.filter(user=user)
+    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
+    permission_classes = [IsAuthenticatedUser]
+
+    def get(self, request, user, group, status):
+        override_requests = OverrideRequest.objects.filter(
+            user=user, group=group, status=status
+        )
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(override_requests, request)
@@ -34,8 +39,13 @@ class GetUserOverrideRequestsForUser(APIView):
 
 
 class GetUserOverrideRequestsForSupervisor(APIView):
-    def get(self, request, user):
-        override_requests = OverrideRequest.objects.filter(supervisor=user)
+    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
+    permission_classes = [IsSupervisorUser]
+
+    def get(self, request, user, group):
+        override_requests = OverrideRequest.objects.filter(
+            supervisor=user, group=group, status="pending"
+        )
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(override_requests, request)
