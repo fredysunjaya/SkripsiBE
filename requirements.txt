@@ -11,6 +11,7 @@ colorama==0.4.6
 deepface==0.0.96
 Django==5.2
 django-cors-headers==4.7.0
+django-migrate-fresh==3.1.0
 djangorestframework==3.16.0
 Faker==18.13.0
 filelock==3.24.3

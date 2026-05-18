@@ -20,8 +20,8 @@ class OverrideRequest(models.Model):
     supervisor = models.ForeignKey(
         User, on_delete=models.RESTRICT, related_name="supervisor_override_set"
     )
-    start_date_time = models.DateTimeField()
-    end_date_time = models.DateTimeField()
+    start_date_time = models.DateTimeField(null=True)
+    end_date_time = models.DateTimeField(null=True)
     status = models.CharField(max_length=255, choices=status)
     reason = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)

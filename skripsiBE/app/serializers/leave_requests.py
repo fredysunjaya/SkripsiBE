@@ -3,14 +3,30 @@ from skripsiBE.app.models.leave_requests import LeaveRequest
 from skripsiBE.app.models.users import User
 from skripsiBE.app.models.groups import Group
 from skripsiBE.app.models.attendance_types import AttendanceType
+from skripsiBE.app.serializers.users import UserSerializer
+from skripsiBE.app.serializers.groups import GroupSerializer
+from skripsiBE.app.serializers.attendance_types import AttendanceTypeSerializer
+
 
 class LeaveRequestSerializer(serializers.ModelSerializer):
-    user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source="user", write_only=True)
-    supervisor_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source="supervisor", write_only=True)
-    group_id = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all(), source="group", write_only=True)
-    attendance_type_id = serializers.PrimaryKeyRelatedField(queryset=AttendanceType.objects.all(), source="attendance_type", write_only=True)
-    
+    user = UserSerializer(read_only=True)
+    supervisor = UserSerializer(read_only=True)
+    group = GroupSerializer(read_only=True)
+    attendance_type = AttendanceTypeSerializer(read_only=True)
+
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), source="user", write_only=True
+    )
+    supervisor_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), source="supervisor", write_only=True
+    )
+    group_id = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all(), source="group", write_only=True
+    )
+    attendance_type_id = serializers.PrimaryKeyRelatedField(
+        queryset=AttendanceType.objects.all(), source="attendance_type", write_only=True
+    )
+
     class Meta:
         model = LeaveRequest
-        depth = 2
         fields = "__all__"

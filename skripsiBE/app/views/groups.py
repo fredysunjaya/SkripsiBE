@@ -19,6 +19,7 @@ class GroupsList(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
     permission_classes = [IsAuthenticatedUser]
 
+    # maybe unused
     def get(self, request):
         groups = Group.objects.all()
 
@@ -63,7 +64,6 @@ class GroupDetails(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        # maybe unused
         self.permission_classes = [IsAdminUser]
         group = self.get_group(id)
 

@@ -14,7 +14,7 @@ from skripsiBE.app.custom_is_authenticated import (
 )
 
 
-class GetUserLeaveRequestsForUser(APIView):
+class LeaveRequestsForUser(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
     permission_classes = [IsAuthenticatedUser]
 
@@ -38,26 +38,11 @@ class GetUserLeaveRequestsForUser(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetUserLeaveRequestsForSupervisor(APIView):
-    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
-    permission_classes = [IsSupervisorUser]
-
-    def get(self, request, user, group):
-        leave_requests = LeaveRequest.objects.filter(
-            supervisor=user, group=group, status="pending"
-        )
-
-        paginator = api_settings.DEFAULT_PAGINATION_CLASS()
-        result_page = paginator.paginate_queryset(leave_requests, request)
-
-        serializers = LeaveRequestSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializers.data)
-
-
 class LeaveRequestDetails(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
+    permission_classes = [IsAuthenticatedUser]
 
-    def get_leave_request(id):
+    def get_leave_request(self, id):
         leave_request = get_object_or_404(LeaveRequest, pk=id)
         return leave_request
 
@@ -79,7 +64,6 @@ class LeaveRequestDetails(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        # maybe unused
         self.permission_classes = [IsAuthenticatedUser]
         leave_request = self.get_leave_request(id)
         leave_request.delete()

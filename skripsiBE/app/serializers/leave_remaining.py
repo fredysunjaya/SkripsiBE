@@ -3,9 +3,16 @@ from skripsiBE.app.models.leave_remaining import LeaveRemaining
 from skripsiBE.app.models.users import User
 from skripsiBE.app.models.groups import Group
 from skripsiBE.app.models.attendance_types import AttendanceType
+from skripsiBE.app.serializers.users import UserSerializer
+from skripsiBE.app.serializers.groups import GroupSerializer
+from skripsiBE.app.serializers.attendance_types import AttendanceTypeSerializer
 
 
 class LeaveRemainingSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    group = GroupSerializer(read_only=True)
+    attendance_type = AttendanceTypeSerializer(read_only=True)
+
     user_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), source="user", write_only=True
     )
@@ -18,5 +25,4 @@ class LeaveRemainingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LeaveRemaining
-        depth = 1
         fields = "__all__"

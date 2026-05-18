@@ -12,15 +12,36 @@ def OverrideRequestSeeder():
         "cancelled": "Cancelled",
     }
 
+    # for i in range(60):
+    #     initial_date_time = fake.unique.date_time_between(
+    #         start_date="-60d", end_date="now"
+    #     )
+
+    #     OverrideRequest.objects.create(
+    #         user_id=1,
+    #         group_id=1,
+    #         supervisor_id=fake.random_int(min=1, max=20),
+    #         start_date_time=initial_date_time,
+    #         end_date_time=initial_date_time
+    #         + timedelta(hours=fake.random_int(min=1, max=6)),
+    #         status=fake.random_element(
+    #             elements=("requested", "approved", "rejected", "cancelled")
+    #         ),
+    #         reason=fake.sentence(nb_words=10),
+    #         created_at=initial_date_time
+    #         + timedelta(days=fake.random_int(min=1, max=7)),
+    #     )
+
+    # supervisor
     for i in range(60):
         initial_date_time = fake.unique.date_time_between(
             start_date="-60d", end_date="now"
         )
 
         OverrideRequest.objects.create(
-            user_id=1,
+            user_id=fake.random_int(min=1, max=20),
             group_id=1,
-            supervisor_id=fake.random_int(min=1, max=20),
+            supervisor_id=1,
             start_date_time=initial_date_time,
             end_date_time=initial_date_time
             + timedelta(hours=fake.random_int(min=1, max=6)),

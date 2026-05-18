@@ -15,7 +15,7 @@ class Command(BaseCommand):
         # GroupSeeder()
         # UserLogSeeder()
         # InvitationRequestSeeder()
-        # OverrideRequestSeeder()
+        OverrideRequestSeeder()
         LeaveRequestSeeder()
 
         self.stdout.write(self.style.SUCCESS("Seeding completed successfully."))

@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
 from skripsiBE.app.models.user_logs import UserLog
-from skripsiBE.app.serializers.user_logs import UserLog
+from skripsiBE.app.serializers.user_logs import UserLogSerializer
 from rest_framework.settings import api_settings
 from skripsiBE.app.custom_basic_authentication import EmailAuthentication
 from skripsiBE.app.custom_session_authentication import CookieSessionAuthentication
@@ -12,6 +12,7 @@ from skripsiBE.app.custom_is_authenticated import (
     IsAdminUser,
     IsSupervisorUser,
 )
+from datetime import datetime
 
 
 class UserLogsList(APIView):
@@ -19,16 +20,27 @@ class UserLogsList(APIView):
     permission_classes = [IsAuthenticatedUser]
 
     def get(self, request, group, user):
-        user_logs = UserLog.objects.filter(group=group, user=user)
+        if request.query_params.get("date") is not None:
+            date_obj = datetime.strptime(
+                request.query_params.get("date"), "%Y-%m-%d"
+            ).date()
+
+            user_logs = UserLog.objects.filter(
+                group=group,
+                user=user,
+                start_date_time__date=date_obj,
+            )
+        else:
+            user_logs = UserLog.objects.filter(group=group, user=user)
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(user_logs, request)
 
-        serializers = UserLog(result_page, many=True)
+        serializers = UserLogSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializers.data)
 
     def post(self, request):
-        serializer = UserLog(data=request.data)
+        serializer = UserLogSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
@@ -41,7 +53,7 @@ class UserLogDetails(APIView):
     authentication_classes = [CookieSessionAuthentication | EmailAuthentication]
     permission_classes = [IsAuthenticatedUser]
 
-    def get_user_log(id):
+    def get_user_log(self, id):
         user_log = get_object_or_404(
             UserLog,
         )
@@ -60,7 +72,6 @@ class UserLogDetails(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        # maybe unused
         user_log = self.get_user_log(id)
         user_log.delete()
         return Response("UserLog Deleted", status=status.HTTP_204_NO_CONTENT)

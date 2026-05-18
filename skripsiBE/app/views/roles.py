@@ -15,7 +15,6 @@ from skripsiBE.app.custom_is_authenticated import (
 
 
 class RolesList(APIView):
-    # maybe unused
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
     permission_classes = [IsAdminUser]
 

@@ -41,7 +41,7 @@ class LeaveRemainingDetails(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
     permission_classes = [IsAuthenticatedUser]
 
-    def get_leave_remaining(id):
+    def get_leave_remaining(self, id):
         leave_remaining = get_object_or_404(LeaveRemaining, pk=id)
         return leave_remaining
 
@@ -61,7 +61,6 @@ class LeaveRemainingDetails(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        # maybe unused
         leave_remaining = self.get_leave_remaining(id)
         leave_remaining.delete()
         return Response("LeaveRemaining Deleted", status=status.HTTP_204_NO_CONTENT)

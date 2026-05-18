@@ -18,42 +18,25 @@ class UserGroupsList(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
     permission_classes = [IsAuthenticatedUser]
 
-    def get(self, request, user):
-        user_groups = UserGroup.objects.filter(user=user, role__in=[2, 3])
+    def get(self, request):
+        if request.query_params.get("user") is not None:
+            user = request.query_params.get("user")
+            is_my_organization = request.query_params.get("isMyOrganization")
+
+            if is_my_organization == "true":
+                user_groups = UserGroup.objects.filter(user=user, role=1)
+            elif is_my_organization == "false":
+                user_groups = UserGroup.objects.filter(user=user, role__in=[2, 3])
+        elif request.query_params.get("group") is not None:
+            group = request.query_params.get("group")
+            user_groups = UserGroup.objects.filter(group=group).exclude(
+                role__name="admin"
+            )
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(user_groups, request)
 
         print(result_page)
-        serializers = UserGroupSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializers.data)
-
-
-class UserGroupsListAdmin(APIView):
-    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
-    permission_classes = [IsAuthenticatedUser]
-
-    def get(self, request, user):
-        user_groups = UserGroup.objects.filter(user=user, role=1)
-
-        paginator = api_settings.DEFAULT_PAGINATION_CLASS()
-        result_page = paginator.paginate_queryset(user_groups, request)
-
-        print(result_page)
-        serializers = UserGroupSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializers.data)
-
-
-class UserGroupsMembers(APIView):
-    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
-    permission_classes = [IsAdminUser]
-
-    def get(self, request, group):
-        user_groups = UserGroup.objects.filter(group=group)
-
-        paginator = api_settings.DEFAULT_PAGINATION_CLASS()
-        result_page = paginator.paginate_queryset(user_groups, request)
-
         serializers = UserGroupSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializers.data)
 
@@ -69,10 +52,11 @@ class UserGroupsMembers(APIView):
 
 class UserGroupDetails(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticatedUser]
 
-    def get_user_group(id):
+    def get_user_group(self, id):
         user_group = get_object_or_404(UserGroup, pk=id)
+
         return user_group
 
     def get(self, request, id):

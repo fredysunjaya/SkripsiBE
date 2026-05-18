@@ -20,7 +20,7 @@ def InvitationRequestSeeder():
     #             invitee_id = i + 1,
     #             inviter_id = userGroups[0].user_id,
     #             group_id = groupId,
-    #             status = fake.random_element(elements=("pending", "accepted", "rejected", "cancelled")),
+    #             status = fake.random_element(elements=("requested", "accepted", "rejected", "cancelled")),
     #         )
 
     for i in range(27, 47):
@@ -29,7 +29,7 @@ def InvitationRequestSeeder():
             invitee_id=1,
             inviter_id=fake.unique.random_int(min=1, max=20),
             group_id=i,
-            status="pending",
+            status="requested",
             created_at=created_at,
             status_updated_at=created_at,
         )

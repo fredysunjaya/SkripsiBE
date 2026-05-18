@@ -6,19 +6,22 @@ from .attendance_types import AttendanceType
 
 class UserLog(models.Model):
     types = {
-        "clock_in": "Clock In",
-        "clock_out": "Clock Out",
         "late": "Late",
         "leave": "Leave",
-        "override": "Override",
+        "override (clock in)": "Override Clock In",
+        "override (clock out)": "Override Clock Out",
+        "override (clock in and out)": "Override Clock In and Out",
     }
 
     user = models.ForeignKey(User, on_delete=models.RESTRICT)
     group = models.ForeignKey(Group, on_delete=models.RESTRICT)
-    attendance_type = models.ForeignKey(AttendanceType, on_delete=models.RESTRICT)
-    start_date_time = models.DateTimeField()
-    end_date_time = models.DateTimeField()
-    type = models.CharField(max_length=255, choices=types)
+    attendance_type = models.ForeignKey(
+        AttendanceType, on_delete=models.RESTRICT, null=True
+    )
+    start_date_time = models.DateTimeField(null=True)
+    end_date_time = models.DateTimeField(null=True)
+    type = models.CharField(max_length=255, choices=types, null=True)
+    reason = models.TextField(null=True)
 
     class Meta:
         db_table = "user_logs"

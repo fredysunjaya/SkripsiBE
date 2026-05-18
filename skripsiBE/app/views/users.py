@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
@@ -40,7 +41,7 @@ class UserDetails(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
     permission_classes = [IsAuthenticatedUser]
 
-    def getUser(email):
+    def get_user(self, email):
         try:
             user = User.objects.get(email=email)
             return user
@@ -50,19 +51,21 @@ class UserDetails(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, id):
-        serializer = UserSerializer(self.getUser(id))
+        serializer = UserSerializer(get_object_or_404(User, pk=id))
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # maybe unused
     def put(self, request, id):
-        serializer = UserSerializer(self.getUser(id), data=request.data, partial=True)
+        serializer = UserSerializer(self.get_user(id), data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # maybe unused
     def delete(self, request, id):
-        user = self.getUser(id)
+        user = self.get_user(id)
         user.delete()
         return Response("User Deleted", status=status.HTTP_204_NO_CONTENT)
 
@@ -119,12 +122,16 @@ class UserRegister(APIView):
 
         data = request.data.copy()
         data["password"] = bcrypt.hashpw(
-            serializer.data.get("password").encode("utf-8"), bcrypt.gensalt()
+            data.get("password").encode("utf-8"), bcrypt.gensalt()
         ).decode("utf-8")
         serializer = UserSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
+            # save user id in session — Django sets cookie automatically
+            request.session["user_id"] = serializer.data.id
+            request.session.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -140,6 +147,9 @@ class UserFaceRegister(APIView):
             )
 
         embeddings = DeepFace.represent(img_path=file, model_name="Facenet512")
+
+        if not embeddings:
+            return Response({"error": "No face detected"}, status=400)
 
         user = User.objects.get(pk=request.session["user_id"])
 

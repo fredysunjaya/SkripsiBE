@@ -14,7 +14,7 @@ from skripsiBE.app.custom_is_authenticated import (
 )
 
 
-class GetUserOverrideRequestsForUser(APIView):
+class OverrideRequestsForUser(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
     permission_classes = [IsAuthenticatedUser]
 
@@ -38,26 +38,10 @@ class GetUserOverrideRequestsForUser(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetUserOverrideRequestsForSupervisor(APIView):
-    authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
-    permission_classes = [IsSupervisorUser]
-
-    def get(self, request, user, group):
-        override_requests = OverrideRequest.objects.filter(
-            supervisor=user, group=group, status="pending"
-        )
-
-        paginator = api_settings.DEFAULT_PAGINATION_CLASS()
-        result_page = paginator.paginate_queryset(override_requests, request)
-
-        serializers = OverrideRequestSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializers.data)
-
-
 class OverrideRequestDetails(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
 
-    def get_override_request(id):
+    def get_override_request(self, id):
         override_request = get_object_or_404(OverrideRequest, pk=id)
         return override_request
 
@@ -79,7 +63,6 @@ class OverrideRequestDetails(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        # maybe unused
         self.permission_classes = [IsAuthenticatedUser]
         override_request = self.get_override_request(id)
         override_request.delete()

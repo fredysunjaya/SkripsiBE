@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "skripsiBE.app",
     "rest_framework",
     "django_migrate_fresh",
+    "django_extensions",
 ]
 
 # CORS_ALLOWED_ORIGINS = [
