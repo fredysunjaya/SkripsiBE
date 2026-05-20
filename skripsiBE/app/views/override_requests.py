@@ -18,9 +18,9 @@ class OverrideRequestsForUser(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
     permission_classes = [IsAuthenticatedUser]
 
-    def get(self, request, user, group, status):
+    def get(self, request, user, group):
         override_requests = OverrideRequest.objects.filter(
-            user=user, group=group, status=status
+            user=user, group=group, status=request.query_params.get("status")
         )
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()

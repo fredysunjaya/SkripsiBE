@@ -21,22 +21,35 @@ class UserGroupsList(APIView):
     def get(self, request):
         if request.query_params.get("user") is not None:
             user = request.query_params.get("user")
-            is_my_organization = request.query_params.get("isMyOrganization")
+            is_managed_org = request.query_params.get("isManagedOrg")
 
-            if is_my_organization == "true":
+            # managedOrg
+            if is_managed_org == "true":
                 user_groups = UserGroup.objects.filter(user=user, role=1)
-            elif is_my_organization == "false":
+            # myOrg
+            else:
+                print("here")
                 user_groups = UserGroup.objects.filter(user=user, role__in=[2, 3])
         elif request.query_params.get("group") is not None:
             group = request.query_params.get("group")
-            user_groups = UserGroup.objects.filter(group=group).exclude(
-                role__name="admin"
-            )
+            role = request.query_params.get("role")
+
+            # Member List MyTeam and Admin > Members
+            if role is None:
+                user_groups = UserGroup.objects.filter(group=group).exclude(
+                    role__name="admin"
+                )
+            # Supervisor List dropdown
+            else:
+                user_groups = UserGroup.objects.filter(group=group, role=role).exclude(
+                    user_id=request.query_params.get("user_id")
+                )
+                serializers = UserGroupSerializer(user_groups, many=True)
+                return Response(serializers.data)
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(user_groups, request)
 
-        print(result_page)
         serializers = UserGroupSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializers.data)
 

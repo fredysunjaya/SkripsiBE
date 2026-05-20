@@ -43,6 +43,10 @@ urlpatterns = [
         leave_remainings.LeaveRemainingList.as_view(),
     ),
     path(
+        "leave-remaining/",
+        leave_remainings.LeaveRemainingList.as_view(),
+    ),
+    path(
         "leave-remaining-details/<int:id>/",
         leave_remainings.LeaveRemainingDetails.as_view(),
     ),
@@ -52,12 +56,20 @@ urlpatterns = [
         leave_requests.LeaveRequestsForUser.as_view(),
     ),
     path(
+        "leave-requests/<int:user>/",
+        leave_requests.LeaveRequestsForUser.as_view(),
+    ),
+    path(
         "leave-requests-details/<int:id>/",
         leave_requests.LeaveRequestDetails.as_view(),
     ),
     # OverrideRequest Endpoints
     path(
-        "override-requests/<int:user>/<int:group>/<str:status>/",
+        "override-requests/<int:user>/<int:group>/",
+        override_requests.OverrideRequestsForUser.as_view(),
+    ),
+    path(
+        "override-requests/",
         override_requests.OverrideRequestsForUser.as_view(),
     ),
     path(
@@ -76,6 +88,7 @@ urlpatterns = [
     path(
         "attendance-types/<int:group>/", attendance_types.AttendanceTypeList.as_view()
     ),
+    path("attendance-types/", attendance_types.AttendanceTypeList.as_view()),
     path(
         "attendance-types-details/<int:id>/",
         attendance_types.AttendanceTypeDetails.as_view(),
@@ -97,6 +110,7 @@ urlpatterns = [
     path("user-groups-details/<int:id>/", user_groups.UserGroupDetails.as_view()),
     # UserLog endpoints
     path("user-logs/<int:group>/<int:user>/", user_logs.UserLogsList.as_view()),
+    path("user-logs/", user_logs.UserLogsList.as_view()),
     path("user-logs-details/<int:id>/", user_logs.UserLogDetails.as_view()),
     # User endpoints
     path("users/", users.UsersList.as_view()),
@@ -107,5 +121,6 @@ urlpatterns = [
     path("users-details/<int:id>/", users.UserDetails.as_view()),
     # WorkingHour endpoints
     path("working-hours/<int:group>/", working_hours.WorkingHoursList.as_view()),
+    path("working-hours/", working_hours.WorkingHoursList.as_view()),
     path("working-hours-details/<int:id>/", working_hours.WorkingHourDetails.as_view()),
 ]
