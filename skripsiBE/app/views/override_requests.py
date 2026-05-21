@@ -21,7 +21,7 @@ class OverrideRequestsForUser(APIView):
     def get(self, request, user, group):
         override_requests = OverrideRequest.objects.filter(
             user=user, group=group, status=request.query_params.get("status")
-        )
+        ).select_related("user", "supervisor", "group")
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(override_requests, request)

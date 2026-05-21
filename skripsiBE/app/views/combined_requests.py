@@ -23,20 +23,20 @@ class CombinedRequests(APIView):
 
         override_qs = OverrideRequest.objects.filter(
             user=user, group=group, status__in="requested"
-        )
+        ).select_related("user", "supervisor", "group")
 
         leave_qs = LeaveRequest.objects.filter(
             user=user, group=group, status__in=["requested"]
-        )
+        ).select_related("user", "supervisor", "group", "attendance_type")
 
         if is_requested == "false":
             override_qs2 = OverrideRequest.objects.filter(
                 user=user, group=group, status__in=["approved", "rejected", "cancelled"]
-            )
+            ).select_related("user", "supervisor", "group")
 
             leave_qs2 = LeaveRequest.objects.filter(
                 user=user, group=group, status__in=["approved", "rejected", "cancelled"]
-            )
+            ).select_related("user", "supervisor", "group", "attendance_type")
 
         override_data = OverrideRequestSerializer(override_qs, many=True).data
         leave_data = LeaveRequestSerializer(leave_qs, many=True).data

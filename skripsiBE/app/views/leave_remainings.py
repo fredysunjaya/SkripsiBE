@@ -12,6 +12,7 @@ from skripsiBE.app.custom_is_authenticated import (
     IsAdminUser,
     IsSupervisorUser,
 )
+from datetime import datetime
 
 
 class LeaveRemainingList(APIView):
@@ -19,13 +20,13 @@ class LeaveRemainingList(APIView):
     permission_classes = [IsAuthenticatedUser]
 
     def get(self, request, user, group):
-        leave_remaining = LeaveRemaining.objects.filter(user=user, group=group)
+        current_year = datetime.now().year
+        leave_remaining = LeaveRemaining.objects.filter(
+            user=user, group=group, year=current_year
+        ).select_related("user", "group", "attendance_type")
 
-        paginator = api_settings.DEFAULT_PAGINATION_CLASS()
-        result_page = paginator.paginate_queryset(leave_remaining, request)
-
-        serializers = LeaveRemainingSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializers.data)
+        serializers = LeaveRemainingSerializer(leave_remaining, many=True)
+        return Response(serializers.data)
 
     def post(self, request):
         serializer = LeaveRemainingSerializer(data=request.data)

@@ -21,11 +21,15 @@ class InvitationRequestsList(APIView):
     def get(self, request):
         if request.query_params.get("invitee") is not None:
             user = request.query_params.get("invitee")
-            invitation_requests = InvitationRequest.objects.filter(invitee=user)
+            invitation_requests = InvitationRequest.objects.filter(
+                invitee=user
+            ).select_related("group", "invitee", "inviter")
 
         elif request.query_params.get("inviter") is not None:
             user = request.query_params.get("inviter")
-            invitation_requests = InvitationRequest.objects.filter(inviter=user)
+            invitation_requests = InvitationRequest.objects.filter(
+                inviter=user
+            ).select_related("group", "invitee", "inviter")
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(invitation_requests, request)

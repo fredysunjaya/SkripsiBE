@@ -25,19 +25,25 @@ class UserGroupsList(APIView):
 
             # managedOrg
             if is_managed_org == "true":
-                user_groups = UserGroup.objects.filter(user=user, role=1)
+                user_groups = UserGroup.objects.filter(
+                    user=user, role=1
+                ).select_related("user", "group", "role")
             # myOrg
             else:
                 print("here")
-                user_groups = UserGroup.objects.filter(user=user, role__in=[2, 3])
+                user_groups = UserGroup.objects.filter(
+                    user=user, role__in=[2, 3]
+                ).select_related("user", "group", "role")
         elif request.query_params.get("group") is not None:
             group = request.query_params.get("group")
             role = request.query_params.get("role")
 
             # Member List MyTeam and Admin > Members
             if role is None:
-                user_groups = UserGroup.objects.filter(group=group).exclude(
-                    role__name="admin"
+                user_groups = (
+                    UserGroup.objects.filter(group=group)
+                    .exclude(role__name="admin")
+                    .select_related("user", "group", "role")
                 )
             # Supervisor List dropdown
             else:

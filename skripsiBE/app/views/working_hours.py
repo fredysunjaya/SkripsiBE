@@ -19,7 +19,7 @@ class WorkingHoursList(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request, group):
-        working_hours = WorkingHours.objects.filter(group=group)
+        working_hours = WorkingHours.objects.filter(group=group).select_related("group")
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(working_hours, request)

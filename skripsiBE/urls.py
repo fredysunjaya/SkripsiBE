@@ -56,7 +56,7 @@ urlpatterns = [
         leave_requests.LeaveRequestsForUser.as_view(),
     ),
     path(
-        "leave-requests/<int:user>/",
+        "leave-requests/",
         leave_requests.LeaveRequestsForUser.as_view(),
     ),
     path(

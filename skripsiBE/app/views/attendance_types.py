@@ -19,7 +19,9 @@ class AttendanceTypeList(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request, group):
-        attendance_types = AttendanceType.objects.filter(group=group)
+        attendance_types = AttendanceType.objects.filter(group=group).select_related(
+            "group"
+        )
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(attendance_types, request)

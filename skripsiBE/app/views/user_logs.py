@@ -29,7 +29,7 @@ class UserLogsList(APIView):
                 group=group,
                 user=user,
                 start_date_time__date=date_obj,
-            )
+            ).select_related("user", "group", "attendance_type")
         else:
             user_logs = UserLog.objects.filter(group=group, user=user)
 

@@ -21,7 +21,7 @@ class LeaveRequestsForUser(APIView):
     def get(self, request, user, group, status):
         leave_requests = LeaveRequest.objects.filter(
             user=user, group=group, status=status
-        )
+        ).select_related("user", "supervisor", "group", "attendance_type")
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(leave_requests, request)
