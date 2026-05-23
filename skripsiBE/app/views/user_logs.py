@@ -13,6 +13,7 @@ from skripsiBE.app.custom_is_authenticated import (
     IsSupervisorUser,
 )
 from datetime import datetime
+from django.db.models import Count
 
 
 class UserLogsList(APIView):
@@ -20,18 +21,26 @@ class UserLogsList(APIView):
     permission_classes = [IsAuthenticatedUser]
 
     def get(self, request, group, user):
-        if request.query_params.get("date") is not None:
-            date_obj = datetime.strptime(
-                request.query_params.get("date"), "%Y-%m-%d"
-            ).date()
+        # dashboard
+        if request.query_params.get("stats") is not None:
+            user_logs = (
+                UserLog.objects.filter(group=group, user=user)
+                .values("type")
+                .annotate(count=Count("id"))
+                .order_by("type")
+            )
 
-            user_logs = UserLog.objects.filter(
-                group=group,
-                user=user,
-                start_date_time__date=date_obj,
-            ).select_related("user", "group", "attendance_type")
+            result_dict = dict((item["type"], item["count"]) for item in user_logs)
+
+            return Response(result_dict)
+
+        # attendance history
         else:
-            user_logs = UserLog.objects.filter(group=group, user=user)
+            user_logs = (
+                UserLog.objects.filter(group=group, user=user)
+                .select_related("user", "group", "attendance_type")
+                .order_by("-start_date_time")
+            )
 
         paginator = api_settings.DEFAULT_PAGINATION_CLASS()
         result_page = paginator.paginate_queryset(user_logs, request)

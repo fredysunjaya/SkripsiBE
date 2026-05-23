@@ -8,9 +8,9 @@ class UserLog(models.Model):
     types = {
         "late": "Late",
         "leave": "Leave",
-        "override (clock in)": "Override Clock In",
-        "override (clock out)": "Override Clock Out",
-        "override (clock in and out)": "Override Clock In and Out",
+        "override clock in": "Override Clock In",
+        "override clock out": "Override Clock Out",
+        "override clock in and out": "Override Clock In and Out",
     }
 
     user = models.ForeignKey(User, on_delete=models.RESTRICT)

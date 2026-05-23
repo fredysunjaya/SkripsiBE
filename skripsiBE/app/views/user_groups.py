@@ -47,8 +47,10 @@ class UserGroupsList(APIView):
                 )
             # Supervisor List dropdown
             else:
-                user_groups = UserGroup.objects.filter(group=group, role=role).exclude(
-                    user_id=request.query_params.get("user_id")
+                user_groups = (
+                    UserGroup.objects.filter(group=group, role=role)
+                    .exclude(user_id=request.query_params.get("user_id"))
+                    .select_related("user", "group", "role")
                 )
                 serializers = UserGroupSerializer(user_groups, many=True)
                 return Response(serializers.data)
