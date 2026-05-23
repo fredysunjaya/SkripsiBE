@@ -31,12 +31,18 @@ from skripsiBE.app.views import (
     users,
     working_hours,
     combined_requests,
+    approve_request,
 )
 
 router = DefaultRouter()
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # ApproveRequest Endpoints
+    path(
+        "approve-request/",
+        approve_request.ApproveRequest.as_view(),
+    ),
     # LeaveRemaining Endpoints
     path(
         "leave-remaining/<int:group>/<int:user>/",

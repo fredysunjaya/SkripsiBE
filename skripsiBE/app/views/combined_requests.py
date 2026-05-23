@@ -24,7 +24,6 @@ class CombinedRequests(APIView):
 
         # my team request
         if is_requested_spv is not None:
-            print(user, group)
             override_qs = OverrideRequest.objects.filter(
                 supervisor=user, group=group, status__in=["requested"]
             ).select_related("user", "supervisor", "group")
@@ -85,7 +84,7 @@ class CombinedRequests(APIView):
             return paginator.get_paginated_response(page)
 
         # history member details
-        if is_requested == "false":
+        elif is_requested == "false":
             override_qs2 = OverrideRequest.objects.filter(
                 user=user, group=group, status__in=["approved", "rejected", "cancelled"]
             ).select_related("user", "supervisor", "group")
