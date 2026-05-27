@@ -82,8 +82,7 @@ class UserLogin(APIView):
                 password.encode("utf-8"), user.password.encode("utf-8")
             ):
                 return Response(
-                    {"error": "Invalid email or password"},
-                    status=status.HTTP_401_UNAUTHORIZED,
+                    {"error_code": 4},
                 )
 
             serializer = UserSerializer(user)
