@@ -19,6 +19,8 @@ class UserGroupsList(APIView):
     permission_classes = [IsAuthenticatedUser]
 
     def get(self, request):
+        user_groups = []
+
         if request.query_params.get("user") is not None:
             user = request.query_params.get("user")
             is_managed_org = request.query_params.get("isManagedOrg")
@@ -30,7 +32,6 @@ class UserGroupsList(APIView):
                 ).select_related("user", "group", "role")
             # myOrg
             else:
-                print("here")
                 user_groups = UserGroup.objects.filter(
                     user=user, role__in=[2, 3]
                 ).select_related("user", "group", "role")

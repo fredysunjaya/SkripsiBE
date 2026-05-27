@@ -32,6 +32,7 @@ from skripsiBE.app.views import (
     working_hours,
     combined_requests,
     approve_request,
+    clock_in_out,
 )
 
 router = DefaultRouter()
@@ -123,10 +124,12 @@ urlpatterns = [
     path("auth/login/", users.UserLogin.as_view()),
     path("auth/logout/", users.UserLogout.as_view()),
     path("auth/register/", users.UserRegister.as_view()),
-    path("auth/face-login/", users.UserFaceLogin.as_view()),
+    path("auth/face-register/", users.UserFaceRegister.as_view()),
     path("users-details/<int:id>/", users.UserDetails.as_view()),
     # WorkingHour endpoints
     path("working-hours/<int:group>/", working_hours.WorkingHoursList.as_view()),
     path("working-hours/", working_hours.WorkingHoursList.as_view()),
     path("working-hours-details/<int:id>/", working_hours.WorkingHourDetails.as_view()),
+    # Clock In Out endpoints
+    path("face-login/", clock_in_out.UserFaceLogin.as_view()),
 ]

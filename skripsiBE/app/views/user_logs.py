@@ -21,6 +21,8 @@ class UserLogsList(APIView):
     permission_classes = [IsAuthenticatedUser]
 
     def get(self, request, group, user):
+        user_logs = []
+
         # dashboard
         if request.query_params.get("stats") is not None:
             user_logs = (

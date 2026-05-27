@@ -19,6 +19,8 @@ class InvitationRequestsList(APIView):
     permission_classes = [IsAuthenticatedUser]
 
     def get(self, request):
+        invitation_requests = []
+
         if request.query_params.get("invitee") is not None:
             user = request.query_params.get("invitee")
             invitation_requests = InvitationRequest.objects.filter(
