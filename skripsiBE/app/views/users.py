@@ -128,10 +128,11 @@ class UserRegister(APIView):
         )
 
         user.save()
+        serializer = UserSerializer(user)
         request.session["user_id"] = user.id
         request.session.save()
 
-        return Response(status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class UserFaceRegister(APIView):
