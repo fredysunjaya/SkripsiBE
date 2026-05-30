@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
 from skripsiBE.app.models.invitation_requests import InvitationRequest
+from skripsiBE.app.models.users import User
 from skripsiBE.app.serializers.invitation_requests import InvitationRequestSerializer
 from rest_framework.settings import api_settings
 from skripsiBE.app.custom_basic_authentication import EmailAuthentication
@@ -40,7 +41,19 @@ class InvitationRequestsList(APIView):
         return paginator.get_paginated_response(serializers.data)
 
     def post(self, request):
-        serializer = InvitationRequestSerializer(data=request.data)
+        user = User.objects.filter(email=request.query_params.get("email")).first()
+
+        if user is None:
+            return Response(
+                {
+                    "error_code": 5,
+                    "error": ["User with the provided email does not exist"],
+                },
+            )
+
+        data = request.data.copy()
+        data["invitee_id"] = user.id
+        serializer = InvitationRequestSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

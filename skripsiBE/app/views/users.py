@@ -82,7 +82,7 @@ class UserLogin(APIView):
                 password.encode("utf-8"), user.password.encode("utf-8")
             ):
                 return Response(
-                    {"error_code": 4},
+                    {"error_code": 4, "error": "Invalid email or password"},
                 )
 
             serializer = UserSerializer(user)
@@ -94,7 +94,7 @@ class UserLogin(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response(
-                {"error_code": 4},
+                {"error_code": 4, "error": "Invalid email or password"},
             )
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -113,7 +113,10 @@ class UserRegister(APIView):
     def post(self, request):
         if User.objects.filter(email=request.data.get("email")).exists():
             return Response(
-                {"error_code": 3},
+                {
+                    "error_code": 3,
+                    "error": "User with the provided email already exists",
+                },
             )
 
         data = request.data.copy()

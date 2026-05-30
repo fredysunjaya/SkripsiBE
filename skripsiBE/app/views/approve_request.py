@@ -121,7 +121,7 @@ class ApproveRequest(APIView):
 
             if leave_remaining.remaining_days - totalDays < 0:
                 return Response(
-                    {"message": "No remaining days available", "error_code": 1},
+                    {"error": "No remaining days available", "error_code": 1},
                     status=400,
                 )
             else:
