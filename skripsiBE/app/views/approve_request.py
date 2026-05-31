@@ -3,9 +3,12 @@ from rest_framework.decorators import APIView
 from rest_framework.response import Response
 from skripsiBE.app.models.override_requests import OverrideRequest
 from skripsiBE.app.models.leave_requests import LeaveRequest
+from skripsiBE.app.models.invitation_requests import InvitationRequest
 from skripsiBE.app.models.leave_remaining import LeaveRemaining
+from skripsiBE.app.models.user_groups import UserGroup
 from skripsiBE.app.serializers.override_requests import OverrideRequestSerializer
 from skripsiBE.app.serializers.leave_requests import LeaveRequestSerializer
+from skripsiBE.app.serializers.invitation_requests import InvitationRequestSerializer
 from skripsiBE.app.models.user_logs import UserLog
 from skripsiBE.app.custom_basic_authentication import EmailAuthentication
 from skripsiBE.app.custom_session_authentication import CookieSessionAuthentication
@@ -166,6 +169,23 @@ class ApproveRequest(APIView):
                         user_log.save()
 
                 return Response(status=200)
-
         elif request.data["type"] == "invitation":
-            return None
+            # change request to approved
+            invitation_request = InvitationRequest.objects.get(pk=id)
+            serializer = InvitationRequestSerializer(
+                invitation_request,
+                data={
+                    "status": status,
+                },
+                partial=True,
+            )
+            if serializer.is_valid():
+                serializer.save()
+
+            user_group = UserGroup.objects.create(
+                user_id=user_id,
+                group_id=group_id,
+                role_id=3,
+            )
+
+            return Response(status=200)
