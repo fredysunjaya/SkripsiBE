@@ -23,11 +23,8 @@ class AttendanceTypeList(APIView):
             "group"
         )
 
-        paginator = api_settings.DEFAULT_PAGINATION_CLASS()
-        result_page = paginator.paginate_queryset(attendance_types, request)
-
-        serializers = AttendanceTypeSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializers.data)
+        serializers = AttendanceTypeSerializer(attendance_types, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = AttendanceTypeSerializer(data=request.data)

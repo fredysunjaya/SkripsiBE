@@ -133,11 +133,15 @@ class ApproveRequest(APIView):
                         days=i
                     )
 
-                    user_log = UserLog.objects.filter(
-                        user_id=user_id,
-                        group_id=group_id,
-                        start_date_time__date=leaveDate,
-                    ).first()
+                    user_log = (
+                        UserLog.objects.filter(
+                            user_id=user_id,
+                            group_id=group_id,
+                            start_date_time__date=leaveDate,
+                        )
+                        .select_related("attendance_types")
+                        .first()
+                    )
 
                     # create new user log
                     if user_log is None:

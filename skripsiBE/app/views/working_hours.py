@@ -21,11 +21,8 @@ class WorkingHoursList(APIView):
     def get(self, request, group):
         working_hours = WorkingHours.objects.filter(group=group).select_related("group")
 
-        paginator = api_settings.DEFAULT_PAGINATION_CLASS()
-        result_page = paginator.paginate_queryset(working_hours, request)
-
-        serializers = WorkingHourSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializers.data)
+        serializers = WorkingHourSerializer(working_hours, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = WorkingHourSerializer(data=request.data)
@@ -50,12 +47,33 @@ class WorkingHourDetails(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, id):
-        serializer = WorkingHourSerializer(self.get_working_hour(id), data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        workingHours = WorkingHours.objects.filter(group_id=id)
+        type = request.query_params.get("type")
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if type == "working_days":
+            for item in request.data.get("added_days"):
+                WorkingHours.objects.create(
+                    group_id=id,
+                    day=item,
+                    start_time=request.data.get("start_time"),
+                    end_time=request.data.get("end_time"),
+                )
+
+            workingHours.filter(day__in=request.data.get("deleted_days")).delete()
+
+            workingHours = WorkingHours.objects.filter(group_id=id)
+            serializer = WorkingHourSerializer(workingHours, many=True)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif type == "working_hours":
+            workingHours.update(
+                start_time=request.data.get("start_time"),
+                end_time=request.data.get("end_time"),
+            )
+
+            serializer = WorkingHourSerializer(workingHours.first())
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, id):
         working_hour = self.get_working_hour(id)
