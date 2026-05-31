@@ -65,7 +65,7 @@ class InvitationRequestDetails(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
     permission_classes = [IsAuthenticatedUser]
 
-    def get_invitation_request(id):
+    def get_invitation_request(self, id):
         invitation_request = get_object_or_404(InvitationRequest, pk=id)
         return invitation_request
 

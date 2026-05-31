@@ -22,7 +22,7 @@ class LeaveRemainingList(APIView):
     def get(self, request, user, group):
         current_year = datetime.now().year
         leave_remaining = LeaveRemaining.objects.filter(
-            user=user, group=group, year=current_year
+            user=user, group=group, year=current_year, attendance_type__is_deleted=False
         ).select_related("user", "group", "attendance_type")
 
         serializers = LeaveRemainingSerializer(leave_remaining, many=True)

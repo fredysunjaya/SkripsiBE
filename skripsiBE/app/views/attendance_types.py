@@ -19,9 +19,9 @@ class AttendanceTypeList(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request, group):
-        attendance_types = AttendanceType.objects.filter(group=group).select_related(
-            "group"
-        )
+        attendance_types = AttendanceType.objects.filter(
+            group=group, is_deleted=False
+        ).select_related("group")
 
         serializers = AttendanceTypeSerializer(attendance_types, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
@@ -39,7 +39,7 @@ class AttendanceTypeDetails(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
     permission_classes = [IsAdminUser]
 
-    def get_attendance_type(id):
+    def get_attendance_type(self, id):
         attendance_type = get_object_or_404(AttendanceType, pk=id)
         return attendance_type
 
