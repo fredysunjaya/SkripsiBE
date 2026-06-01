@@ -13,10 +13,13 @@ class WorkingHours(models.Model):
         "sunday": "Sunday",
     }
 
-    group = models.ForeignKey(Group, on_delete=models.RESTRICT)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     day = models.CharField(max_length=255, choices=days)
     start_time = models.TimeField()
     end_time = models.TimeField()
 
     class Meta:
         db_table = "working_hours"
+        indexes = [
+            models.Index(fields=["group"]),
+        ]

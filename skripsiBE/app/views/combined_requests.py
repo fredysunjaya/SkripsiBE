@@ -25,11 +25,11 @@ class CombinedRequests(APIView):
         # my team request
         if is_requested_spv is not None:
             override_qs = OverrideRequest.objects.filter(
-                supervisor=user, group=group, status__in=["requested"]
+                group=group, supervisor=user, status__in=["requested"]
             ).select_related("user", "supervisor", "group")
 
             leave_qs = LeaveRequest.objects.filter(
-                supervisor=user, group=group, status__in=["requested"]
+                group=group, supervisor=user, status__in=["requested"]
             ).select_related("user", "supervisor", "group", "attendance_type")
 
             override_data = OverrideRequestSerializer(override_qs, many=True).data

@@ -26,7 +26,7 @@ class UserLogsList(APIView):
         # dashboard
         if request.query_params.get("stats") is not None:
             user_logs = (
-                UserLog.objects.filter(group=group, user=user)
+                UserLog.objects.filter(user=user, group=group)
                 .values("type")
                 .annotate(count=Count("id"))
                 .order_by("type")
@@ -39,7 +39,7 @@ class UserLogsList(APIView):
         # attendance history
         else:
             user_logs = (
-                UserLog.objects.filter(group=group, user=user)
+                UserLog.objects.filter(user=user, group=group)
                 .select_related("user", "group", "attendance_type")
                 .order_by("-start_date_time")
             )

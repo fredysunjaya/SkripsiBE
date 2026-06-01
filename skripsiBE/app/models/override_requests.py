@@ -14,11 +14,11 @@ class OverrideRequest(models.Model):
     }
 
     user = models.ForeignKey(
-        User, on_delete=models.RESTRICT, related_name="user_override_set"
+        User, on_delete=models.DO_NOTHING, related_name="user_override_set"
     )
-    group = models.ForeignKey(Group, on_delete=models.RESTRICT)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     supervisor = models.ForeignKey(
-        User, on_delete=models.RESTRICT, related_name="supervisor_override_set"
+        User, on_delete=models.DO_NOTHING, related_name="supervisor_override_set"
     )
     start_date_time = models.DateTimeField(null=True)
     end_date_time = models.DateTimeField(null=True)
@@ -28,3 +28,6 @@ class OverrideRequest(models.Model):
 
     class Meta:
         db_table = "override_requests"
+        indexes = [
+            models.Index(fields=["user", "group", "supervisor"]),
+        ]

@@ -98,18 +98,6 @@ class ApproveRequest(APIView):
             todayYear = datetime.now().year
             attendance_type_id = request.data.get("attendance_type_id")
 
-            # change request to approved
-            leave_request = LeaveRequest.objects.get(pk=id)
-            serializer = LeaveRequestSerializer(
-                leave_request,
-                data={
-                    "status": status,
-                },
-                partial=True,
-            )
-            if serializer.is_valid():
-                serializer.save()
-
             leave_remaining = LeaveRemaining.objects.filter(
                 user_id=user_id,
                 group_id=group_id,
@@ -125,9 +113,20 @@ class ApproveRequest(APIView):
             if leave_remaining.remaining_days - totalDays < 0:
                 return Response(
                     {"error": "No remaining days available", "error_code": 1},
-                    status=400,
                 )
             else:
+                # change request to approved
+                leave_request = LeaveRequest.objects.get(pk=id)
+                serializer = LeaveRequestSerializer(
+                    leave_request,
+                    data={
+                        "status": status,
+                    },
+                    partial=True,
+                )
+                if serializer.is_valid():
+                    serializer.save()
+
                 leave_remaining.remaining_days -= totalDays
                 leave_remaining.save()
 
@@ -142,7 +141,7 @@ class ApproveRequest(APIView):
                             group_id=group_id,
                             start_date_time__date=leaveDate,
                         )
-                        .select_related("attendance_types")
+                        .select_related("attendance_type")
                         .first()
                     )
 

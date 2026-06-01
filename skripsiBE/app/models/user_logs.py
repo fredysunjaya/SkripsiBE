@@ -13,10 +13,10 @@ class UserLog(models.Model):
         "override clock in and out": "Override Clock In and Out",
     }
 
-    user = models.ForeignKey(User, on_delete=models.RESTRICT)
-    group = models.ForeignKey(Group, on_delete=models.RESTRICT)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     attendance_type = models.ForeignKey(
-        AttendanceType, on_delete=models.RESTRICT, null=True
+        AttendanceType, on_delete=models.CASCADE, null=True
     )
     start_date_time = models.DateTimeField(null=True)
     end_date_time = models.DateTimeField(null=True)
@@ -25,3 +25,6 @@ class UserLog(models.Model):
 
     class Meta:
         db_table = "user_logs"
+        indexes = [
+            models.Index(fields=["user", "group", "attendance_type"]),
+        ]

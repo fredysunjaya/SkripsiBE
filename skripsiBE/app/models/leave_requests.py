@@ -15,13 +15,13 @@ class LeaveRequest(models.Model):
     }
 
     user = models.ForeignKey(
-        User, on_delete=models.RESTRICT, related_name="user_leave_set"
+        User, on_delete=models.DO_NOTHING, related_name="user_leave_set"
     )
-    group = models.ForeignKey(Group, on_delete=models.RESTRICT)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     supervisor = models.ForeignKey(
-        User, on_delete=models.RESTRICT, related_name="supervisor_leave_set"
+        User, on_delete=models.DO_NOTHING, related_name="supervisor_leave_set"
     )
-    attendance_type = models.ForeignKey(AttendanceType, on_delete=models.RESTRICT)
+    attendance_type = models.ForeignKey(AttendanceType, on_delete=models.CASCADE)
     start_date_time = models.DateTimeField()
     end_date_time = models.DateTimeField()
     status = models.CharField(max_length=255, choices=status)
@@ -30,3 +30,6 @@ class LeaveRequest(models.Model):
 
     class Meta:
         db_table = "leave_requests"
+        indexes = [
+            models.Index(fields=["user", "group", "supervisor", "attendance_type"]),
+        ]

@@ -3,11 +3,15 @@ from .users import User
 from .roles import Role
 from .groups import Group
 
+
 # Create your models here.
 class UserGroup(models.Model):
-    user = models.ForeignKey(User, on_delete=models.RESTRICT)
-    group = models.ForeignKey(Group, on_delete=models.RESTRICT)
-    role = models.ForeignKey(Role, on_delete=models.RESTRICT)
-    
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.DO_NOTHING)
+
     class Meta:
         db_table = "user_groups"
+        indexes = [
+            models.Index(fields=["user", "group", "role"]),
+        ]

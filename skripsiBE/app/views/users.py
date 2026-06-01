@@ -78,6 +78,11 @@ class UserLogin(APIView):
         try:
             user = User.objects.get(email=email)
 
+            if not user:
+                return Response(
+                    {"error_code": 4, "error": "Invalid email or password"},
+                )
+
             if not bcrypt.checkpw(
                 password.encode("utf-8"), user.password.encode("utf-8")
             ):

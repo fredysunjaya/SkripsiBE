@@ -3,6 +3,10 @@ from rest_framework import status
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
 from skripsiBE.app.models.groups import Group
+from skripsiBE.app.models.users import User
+from skripsiBE.app.models.user_groups import UserGroup
+from skripsiBE.app.models.working_hours import WorkingHours
+from skripsiBE.app.models.attendance_types import AttendanceType
 from skripsiBE.app.serializers.groups import GroupSerializer
 from rest_framework.settings import api_settings
 from skripsiBE.app.custom_basic_authentication import EmailAuthentication
@@ -12,6 +16,7 @@ from skripsiBE.app.custom_is_authenticated import (
     IsAdminUser,
     IsSupervisorUser,
 )
+import bcrypt
 
 
 class GroupsList(APIView):
@@ -30,9 +35,36 @@ class GroupsList(APIView):
         return paginator.get_paginated_response(serializers.data)
 
     def post(self, request):
-        serializer = GroupSerializer(data=request.data)
+        serializer = GroupSerializer(data=request.data.get("group"))
         if serializer.is_valid():
             serializer.save()
+
+            UserGroup.objects.create(
+                user_id=request.data.get("user_id"),
+                group_id=serializer.data.get("id"),
+                role_id=1,
+            )
+
+            days = request.data.get("working_days")
+            start_time = request.data.get("working_hours").get("start_time")
+            end_time = request.data.get("working_hours").get("end_time")
+            for item in days:
+                WorkingHours.objects.create(
+                    group_id=serializer.data.get("id"),
+                    day=item,
+                    start_time=start_time,
+                    end_time=end_time,
+                )
+
+            attendance_types = request.data.get("attendance_types")
+            for item in attendance_types:
+                AttendanceType.objects.create(
+                    name=item.get("name"),
+                    group_id=serializer.data.get("id"),
+                    max_days=item.get("max_days"),
+                    is_deleted=False,
+                )
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -64,6 +96,15 @@ class GroupDetails(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
+        user = User.objects.get(email=request.data.get("email"))
+
+        if not bcrypt.checkpw(
+            request.data.get("password").encode("utf-8"), user.password.encode("utf-8")
+        ):
+            return Response(
+                {"error_code": 6, "error": "Invalid password"},
+            )
+
         self.permission_classes = [IsAdminUser]
         group = self.get_group(id)
 
