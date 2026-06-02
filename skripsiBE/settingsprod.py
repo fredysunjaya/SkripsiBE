@@ -161,17 +161,18 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# CORS settings
+# CORS
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-# session stored in DB (default)
+# Session
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_AGE = 60 * 60 * 24
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = True
+SESSION_SAVE_EVERY_REQUEST = True
 
-SESSION_COOKIE_AGE = 60 * 60 * 24  # 1 day
-SESSION_COOKIE_HTTPONLY = True  # JS can't access cookie (security)
-SESSION_COOKIE_SAMESITE = "Lax"  # CSRF protection
-SESSION_SAVE_EVERY_REQUEST = True  # refresh expiry on activity
-
-# in production set this to True
-SESSION_COOKIE_SECURE = False  # True = HTTPS only
+# CSRF
+CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SECURE = True
