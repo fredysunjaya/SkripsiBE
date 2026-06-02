@@ -1,50 +1,61 @@
-# ---------------------------
+# ─────────────────────────────────────────────
 # Stage 1: Builder
-# ---------------------------
+# ─────────────────────────────────────────────
 FROM python:3.11-slim AS builder
+
+# System deps required to compile Python packages and OpenCV
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgl1 \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /install
 
-# Only build dependencies (removed later)
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libhdf5-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY requirements.txt .
 
-RUN pip install --upgrade pip
-RUN pip install --prefix=/install --no-cache-dir \
-    --trusted-host pypi.org \
-    --trusted-host pypi.python.org \
-    --trusted-host files.pythonhosted.org \
-    -r requirements.txt
+RUN pip install --upgrade pip \
+    && pip install --prefix=/install/pkg --no-cache-dir -r requirements.txt
 
-# ---------------------------
-# Stage 2: Final image
-# ---------------------------
-FROM python:3.11-slim
+
+# ─────────────────────────────────────────────
+# Stage 2: Runtime
+# ─────────────────────────────────────────────
+FROM python:3.11-slim AS runtime
+
+# Runtime system libraries (OpenCV / DeepFace dependencies)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libgl1 \
+    libgomp1 \
+    libhdf5-dev \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy installed Python packages from builder
+COPY --from=builder /install/pkg /usr/local
 
 WORKDIR /app
 
-# Only runtime libraries (no -dev packages)
-RUN apt-get update && apt-get install -y \
-    ffmpeg \
-    libsm6 \
-    libxext6 \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN python -c "from deepface import DeepFace; DeepFace.build_model('Facenet')"
-
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
-
-# Copy installed packages from builder
-COPY --from=builder /install /usr/local
-
-# Copy project AFTER deps (better caching)
+# Copy project source
 COPY . .
 
-EXPOSE 8080
+# DeepFace downloads model weights at runtime; pre-create the cache dir
+RUN mkdir -p /root/.deepface/weights
 
-CMD ["gunicorn", "skripsiBE.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--workers", "4", "--bind", "0.0.0.0:8080"]
+EXPOSE 8000
+
+# Gunicorn is recommended for production; adjust `myproject` to your Django project name
+CMD ["gunicorn", "myproject.wsgi:application", \
+    "--bind", "0.0.0.0:8000", \
+    "--workers", "2", \
+    "--timeout", "120", \
+    "--log-level", "info"]

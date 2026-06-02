@@ -1,2 +1,15 @@
-env
-static
+.git
+.gitignore
+.env
+*.pyc
+__pycache__/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+media/
+staticfiles/
+*.sqlite3
+.DS_Store
+/static/
