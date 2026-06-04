@@ -26,13 +26,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = ["*"]
-# ALLOWED_HOSTS = ['your-railway-app-name.up.railway.app', 'localhost']
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -68,10 +61,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "skripsiBE.urls"
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://65df1d30-cfa1-4e57-8760-75c2bc37637b-00-cjpaackg3e7h.sisko.repl.co",
-    "https://65df1d30-cfa1-4e57-8760-75c2bc37637b-00-cjpaackg3e7h.sisko.replit.dev",
-]
 
 TEMPLATES = [
     {
@@ -161,18 +150,40 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+IS_PRODUCTION = os.environ.get("IS_PRODUCTION", "False") == "True"
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = not IS_PRODUCTION
+
 # CORS
-CORS_ALLOW_ALL_ORIGINS = True
+if IS_PRODUCTION:
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = [
+        "https://tenda-gamma.vercel.app",
+    ]
+else:
+    CORS_ALLOW_ALL_ORIGINS = True  # allow all in dev
+
 CORS_ALLOW_CREDENTIALS = True
 
 # Session
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 60 * 60 * 24
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = IS_PRODUCTION  # True in prod, False in dev
 SESSION_SAVE_EVERY_REQUEST = True
-SESSION_COOKIE_SAMESITE = "Lax"
 
 # CSRF
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SECURE = IS_PRODUCTION  # True in prod, False in dev
+CSRF_TRUSTED_ORIGINS = [
+    "https://tenda-gamma.vercel.app",
+    "https://tenda-app.my.id",
+]
+
+# Allowed Hosts
+if IS_PRODUCTION:
+    ALLOWED_HOSTS = ["tenda-app.my.id"]
+else:
+    ALLOWED_HOSTS = ["*"]
