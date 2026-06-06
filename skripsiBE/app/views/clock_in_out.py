@@ -4,8 +4,8 @@ from django.db.models import Q
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
 from skripsiBE.app.models.users import User
+from skripsiBE.app.models.working_hours import WorkingHours
 from skripsiBE.app.models.user_logs import UserLog
-from skripsiBE.app.serializers.users import UserSerializer
 from deepface import DeepFace
 from deepface.modules.verification import find_threshold
 from deepface.modules.verification import find_euclidean_distance
@@ -18,6 +18,9 @@ from skripsiBE.app.custom_is_authenticated import (
 )
 from django.utils.dateparse import parse_datetime
 import numpy as np
+from zoneinfo import ZoneInfo
+from datetime import datetime, time
+from django.utils import timezone
 
 
 class UserFaceLogin(APIView):
@@ -97,7 +100,18 @@ class UserFaceLogin(APIView):
 
         user_id = request.POST.get("user_id")
         group_id = request.POST.get("group_id")
-        date_time = request.POST.get("date_time")
+        date_time = parse_datetime(request.POST.get("date_time"))
+
+        # get today log
+        wib = ZoneInfo("Asia/Jakarta")
+        utc = ZoneInfo("UTC")
+        today_wib = timezone.localdate()
+
+        start_wib = datetime.combine(today_wib, time.min).replace(tzinfo=wib)
+        end_wib = datetime.combine(today_wib, time.max).replace(tzinfo=wib)
+
+        start_utc = start_wib.astimezone(utc)
+        end_utc = end_wib.astimezone(utc)
 
         user_log = (
             UserLog.objects.filter(
@@ -105,33 +119,63 @@ class UserFaceLogin(APIView):
                 group_id=group_id,
             )
             .filter(
-                Q(start_date_time__date=parse_datetime(date_time).date())
-                | Q(end_date_time__date=parse_datetime(date_time).date())
+                Q(start_date_time__range=(start_utc, end_utc))
+                | Q(end_date_time__range=(start_utc, end_utc))
             )
             .first()
         )
 
         start_date_time = None
         end_date_time = None
+        isLate = False
 
-        # create new user log
         if request.POST.get("type") == "clock in":
             start_date_time = date_time
+            # late or not
+            working_hours = WorkingHours.objects.filter(
+                group=group_id,
+                day=date_time.strftime("%A"),
+            ).first()
+
+            if working_hours is not None:
+                local_time = working_hours.start_time
+                date = datetime(2026, 6, 6).date()
+
+                local_dt = datetime.combine(date, local_time).replace(tzinfo=wib)
+
+                working_hours_utc_time = local_dt.astimezone(utc).time()
+
+                print(
+                    f"Working hours local time: {local_time}, UTC time: {working_hours_utc_time}, User clock in time: {start_date_time.time()}"
+                )
+
+                if (
+                    working_hours.start_time
+                    != datetime.strptime("00:00:00", "%H:%M:%S").time() and
+                    working_hours.end_time
+                    != datetime.strptime("23:59:00", "%H:%M:%S").time()
+                    and start_date_time.time() > working_hours_utc_time
+                ):
+                    isLate = True
         elif request.POST.get("type") == "clock out":
             end_date_time = date_time
 
+        print(isLate)
+        # create new user log
         if user_log is None:
             user_log = UserLog.objects.create(
                 user_id=user_id,
                 group_id=group_id,
                 start_date_time=start_date_time,
                 end_date_time=end_date_time,
+                type="late" if isLate else None,
             )
 
         # update user log based on leave
         else:
             user_log.start_date_time = start_date_time or user_log.start_date_time
             user_log.end_date_time = end_date_time or user_log.end_date_time
+            user_log.type = "late" if isLate else None
 
             user_log.save()
         return Response(status=status.HTTP_200_OK)

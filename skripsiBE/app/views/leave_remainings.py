@@ -12,7 +12,9 @@ from skripsiBE.app.custom_is_authenticated import (
     IsAdminUser,
     IsSupervisorUser,
 )
-from datetime import datetime
+from datetime import datetime, time
+from zoneinfo import ZoneInfo
+from django.utils import timezone
 
 
 class LeaveRemainingList(APIView):
@@ -20,9 +22,21 @@ class LeaveRemainingList(APIView):
     permission_classes = [IsAuthenticatedUser]
 
     def get(self, request, user, group):
-        current_year = datetime.now().year
+        wib = ZoneInfo("Asia/Jakarta")
+
+        today_wib = timezone.localdate()
+
+        start_wib = datetime.combine(today_wib, time.min).replace(tzinfo=wib)
+        end_wib = datetime.combine(today_wib, time.max).replace(tzinfo=wib)
+
+        start_utc = start_wib.astimezone(ZoneInfo("UTC")).year
+        end_utc = end_wib.astimezone(ZoneInfo("UTC")).year
+
         leave_remaining = LeaveRemaining.objects.filter(
-            user=user, group=group, year=current_year, attendance_type__is_deleted=False
+            user=user,
+            group=group,
+            year__range=(start_utc, end_utc),
+            attendance_type__is_deleted=False,
         ).select_related("user", "group", "attendance_type")
 
         serializers = LeaveRemainingSerializer(leave_remaining, many=True)

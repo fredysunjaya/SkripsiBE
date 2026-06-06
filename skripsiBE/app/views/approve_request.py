@@ -12,6 +12,7 @@ from skripsiBE.app.serializers.invitation_requests import InvitationRequestSeria
 from skripsiBE.app.models.user_logs import UserLog
 from skripsiBE.app.custom_basic_authentication import EmailAuthentication
 from skripsiBE.app.custom_session_authentication import CookieSessionAuthentication
+from django.db.models import Q
 from skripsiBE.app.custom_is_authenticated import (
     IsAuthenticatedUser,
     IsAdminUser,
@@ -19,7 +20,9 @@ from skripsiBE.app.custom_is_authenticated import (
 )
 from rest_framework.exceptions import PermissionDenied
 from django.utils.dateparse import parse_datetime
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
+from zoneinfo import ZoneInfo
+from django.utils import timezone
 
 
 class ApproveRequest(APIView):
@@ -41,8 +44,16 @@ class ApproveRequest(APIView):
         id = request.data.get("id")
         user_id = request.data.get("user_id")
         group_id = request.data.get("group_id")
-        start_date_time = request.data.get("start_date_time")
-        end_date_time = request.data.get("end_date_time")
+        start_date_time = (
+            None
+            if request.data.get("start_date_time") is None
+            else parse_datetime(request.data.get("start_date_time"))
+        )
+        end_date_time = (
+            None
+            if request.data.get("end_date_time") is None
+            else parse_datetime(request.data.get("end_date_time"))
+        )
         status = request.data.get("status")
         reason = request.data.get("reason")
 
@@ -59,9 +70,18 @@ class ApproveRequest(APIView):
             if serializer.is_valid():
                 serializer.save()
 
-            user_log = UserLog.objects.filter(
-                start_date_time__date=parse_datetime(start_date_time).date()
-            ).first()
+            user_log = (
+                UserLog.objects.filter(
+                    user_id=user_id,
+                    group_id=group_id,
+                )
+                .filter(
+                    Q(start_date_time__date=start_date_time)
+                    | Q(end_date_time__date=end_date_time)
+                )
+                .first()
+            )
+
             type = (
                 "override clock in and out"
                 if (end_date_time is not None and start_date_time is not None)
@@ -88,27 +108,35 @@ class ApproveRequest(APIView):
             else:
                 user_log.start_date_time = start_date_time or user_log.start_date_time
                 user_log.end_date_time = end_date_time or user_log.end_date_time
-                user_log.type = type
                 user_log.reason = reason
+
+                if user_log.type != type:
+                    user_log.type = "override clock in and out"
 
                 user_log.save()
 
             return Response(status=200)
         elif request.data["type"] == "leave":
-            todayYear = datetime.now().year
+            wib = ZoneInfo("Asia/Jakarta")
+
+            today_wib = timezone.localdate()
+
+            start_wib = datetime.combine(today_wib, time.min).replace(tzinfo=wib)
+            end_wib = datetime.combine(today_wib, time.max).replace(tzinfo=wib)
+
+            start_utc = start_wib.astimezone(ZoneInfo("UTC")).year
+            end_utc = end_wib.astimezone(ZoneInfo("UTC")).year
+
             attendance_type_id = request.data.get("attendance_type_id")
 
             leave_remaining = LeaveRemaining.objects.filter(
                 user_id=user_id,
                 group_id=group_id,
                 attendance_type_id=attendance_type_id,
-                year=todayYear,
+                year__range=(start_utc, end_utc),
             ).first()
 
-            totalDays = (
-                parse_datetime(end_date_time).date()
-                - parse_datetime(start_date_time).date()
-            ).days + 1
+            totalDays = (end_date_time.date() - start_date_time.date()).days + 1
 
             if leave_remaining.remaining_days - totalDays < 0:
                 return Response(
@@ -131,15 +159,16 @@ class ApproveRequest(APIView):
                 leave_remaining.save()
 
                 for i in range(totalDays):
-                    leaveDate = parse_datetime(start_date_time).date() + timedelta(
-                        days=i
-                    )
+                    leaveDate = start_date_time + timedelta(days=i)
 
                     user_log = (
                         UserLog.objects.filter(
                             user_id=user_id,
                             group_id=group_id,
-                            start_date_time__date=leaveDate,
+                        )
+                        .filter(
+                            Q(start_date_time__date=leaveDate)
+                            | Q(end_date_time__date=leaveDate)
                         )
                         .select_related("attendance_type")
                         .first()
