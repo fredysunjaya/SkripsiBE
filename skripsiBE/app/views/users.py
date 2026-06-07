@@ -161,7 +161,12 @@ class UserFaceRegister(APIView):
                 file_bytes = np.frombuffer(file.read(), dtype=np.uint8)
                 img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-                embeddings = DeepFace.represent(img_path=img, model_name="Facenet512")
+                embeddings = DeepFace.represent(
+                    img_path=img,
+                    model_name="Facenet512",
+                    anti_spoofing=True,
+                    detector_backend="retinaface",
+                )
                 if embeddings:
                     all_embeddings.append(embeddings[0]["embedding"])
             except Exception as e:

@@ -43,7 +43,8 @@ class UserFaceLogin(APIView):
             embeddings = DeepFace.represent(
                 img_path=img,
                 model_name="Facenet512",
-                enforce_detection=True,  # Ensures a face is actually present
+                detector_backend="retinaface",
+                anti_spoofing=True,
             )
 
             if not embeddings:
@@ -151,8 +152,8 @@ class UserFaceLogin(APIView):
 
                 if (
                     working_hours.start_time
-                    != datetime.strptime("00:00:00", "%H:%M:%S").time() and
-                    working_hours.end_time
+                    != datetime.strptime("00:00:00", "%H:%M:%S").time()
+                    and working_hours.end_time
                     != datetime.strptime("23:59:00", "%H:%M:%S").time()
                     and start_date_time.time() > working_hours_utc_time
                 ):
@@ -175,7 +176,7 @@ class UserFaceLogin(APIView):
         else:
             user_log.start_date_time = start_date_time or user_log.start_date_time
             user_log.end_date_time = end_date_time or user_log.end_date_time
-            user_log.type = "late" if isLate else None
+            user_log.type = "late" if isLate else user_log.type
 
             user_log.save()
         return Response(status=status.HTTP_200_OK)
