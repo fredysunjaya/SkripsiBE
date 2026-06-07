@@ -146,10 +146,6 @@ class UserFaceLogin(APIView):
 
                 working_hours_utc_time = local_dt.astimezone(utc).time()
 
-                print(
-                    f"Working hours local time: {local_time}, UTC time: {working_hours_utc_time}, User clock in time: {start_date_time.time()}"
-                )
-
                 if (
                     working_hours.start_time
                     != datetime.strptime("00:00:00", "%H:%M:%S").time()
@@ -161,7 +157,6 @@ class UserFaceLogin(APIView):
         elif request.POST.get("type") == "clock out":
             end_date_time = date_time
 
-        print(isLate)
         # create new user log
         if user_log is None:
             user_log = UserLog.objects.create(

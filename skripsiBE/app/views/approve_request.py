@@ -110,7 +110,10 @@ class ApproveRequest(APIView):
                 user_log.end_date_time = end_date_time or user_log.end_date_time
                 user_log.reason = reason
 
-                if user_log.type != type:
+                if (
+                    user_log.type == "override clock in"
+                    or user_log.type == "override clock out"
+                ) and user_log.type != type:
                     user_log.type = "override clock in and out"
 
                 user_log.save()
