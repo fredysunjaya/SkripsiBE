@@ -16,15 +16,16 @@ from skripsiBE.app.custom_is_authenticated import (
 
 class WorkingHoursList(APIView):
     authentication_classes = [CookieSessionAuthentication, EmailAuthentication]
-    permission_classes = [IsAdminUser]
 
     def get(self, request, group):
+        self.permission_classes = [IsAuthenticatedUser]
         working_hours = WorkingHours.objects.filter(group=group).select_related("group")
 
         serializers = WorkingHourSerializer(working_hours, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
 
     def post(self, request):
+        self.permission_classes = [IsAdminUser]
         serializer = WorkingHourSerializer(data=request.data)
 
         if serializer.is_valid():

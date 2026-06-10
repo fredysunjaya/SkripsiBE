@@ -68,7 +68,7 @@ class UserFaceLogin(APIView):
                 """
                 SELECT id, face_vector, email
                 FROM users
-                ORDER BY face_vector <-> %s::vector
+                ORDER BY face_vector <=> %s::vector
                 LIMIT 1
                 """,
                 [input_vector_str],
